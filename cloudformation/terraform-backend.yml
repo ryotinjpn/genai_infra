@@ -1,0 +1,91 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "Terraform Backend Stack"
+
+# -------------------------------------
+# Metadata
+# -------------------------------------
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "Project Configuration"
+        Parameters:
+          - ProjectName
+          - Environment
+
+# -------------------------------------
+# Parameters
+# -------------------------------------
+Parameters:
+  ProjectName:
+    Description: "Enter the project name."
+    Type: String
+    Default: genai
+    MinLength: 1
+    ConstraintDescription: "ProjectName must be enter."
+  Environment:
+    Description: "Select the environment."
+    Type: String
+    AllowedValues:
+      - dev
+      - stg
+      - prd
+    ConstraintDescription: "Environment must be select."
+
+# -------------------------------------
+# Resources
+# -------------------------------------
+Resources:
+  # -------------------------------------
+  # S3
+  # -------------------------------------
+  StateBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      BucketName: !Sub "tfstate-${ProjectName}-${Environment}-${AWS::Region}"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpiresAfter365DaysFor4thOlderVersion
+            Status: Enabled
+            NoncurrentVersionExpiration:
+              NewerNoncurrentVersions: 3
+              NoncurrentDays: 365
+  StateBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref StateBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Deny
+            Principal: "*"
+            Action:
+              - s3:*
+            Resource:
+              - !Sub arn:${AWS::Partition}:s3:::tfstate-${ProjectName}-${Environment}-${AWS::Region}
+              - !Sub arn:${AWS::Partition}:s3:::tfstate-${ProjectName}-${Environment}-${AWS::Region}/*
+            Condition:
+              Bool:
+                aws:SecureTransport: false
+
+# -------------------------------------
+# Outputs
+# -------------------------------------
+Outputs:
+  StateBucketName:
+    Value: !Ref StateBucket
+  StateBucketArn:
+    Value: !GetAtt StateBucket.Arn
