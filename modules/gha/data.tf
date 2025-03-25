@@ -35,6 +35,9 @@ data "aws_iam_policy_document" "bedrock" {
       "bedrock:InvokeModel",
       "bedrock:InvokeModelWithResponseStream"
     ]
-    resources = ["arn:aws:bedrock:*::foundation-model/anthropic.*"]
+    resources = [
+      "arn:aws:bedrock:*::foundation-model/anthropic.*",
+      "arn:aws:bedrock:${var.bedrock_region}:${data.aws_caller_identity.self.id}:inference-profile/*"
+    ]
   }
 }

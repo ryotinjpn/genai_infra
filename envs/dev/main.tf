@@ -13,4 +13,6 @@ module "gha" {
 
   project_name = local.project_name
   environment  = local.environment
+
+  bedrock_region = local.bedrock_region
 }

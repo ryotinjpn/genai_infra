@@ -70,7 +70,7 @@ data "aws_iam_policy_document" "lambda_role" {
     ]
     resources = [
       "arn:aws:bedrock:*::foundation-model/anthropic.*",
-      "arn:aws:bedrock:${var.bedrock_region}:${data.aws_caller_identity.self.id}:inference-profile/us.anthropic.*"
+      "arn:aws:bedrock:${var.bedrock_region}:${data.aws_caller_identity.self.id}:inference-profile/*"
     ]
   }
 }

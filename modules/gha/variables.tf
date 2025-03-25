@@ -16,3 +16,12 @@ variable "environment" {
     error_message = "environment must be one of the following: [sandbox, dev, stg, prd]."
   }
 }
+
+# -------------------------------------
+# IAM
+# -------------------------------------
+variable "bedrock_region" {
+  type        = string
+  description = "Enter the Bedrock region."
+  nullable    = false
+}
