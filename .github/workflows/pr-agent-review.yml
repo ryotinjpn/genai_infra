@@ -41,7 +41,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           config.model: ${{ secrets.AWS_PR_AGENT_MODEL }}
           config.model_turbo: ${{ secrets.AWS_PR_AGENT_MODEL }}
-          config.fallback_models: ${{ secrets.AWS_PR_AGENT_FALLBACK_MODEL }}
+          config.fallback_models: ${{ secrets.AWS_PR_AGENT_MODEL }}
           github_action_config.auto_review: true
           github_action_config.auto_describe: true
           github_action_config.auto_improve: true
