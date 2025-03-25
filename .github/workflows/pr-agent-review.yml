@@ -1,0 +1,54 @@
+name: PR Agent Review
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+    branches-ignore:
+      - 'release/**'
+      - 'doc/**'
+
+env:
+  REGION_NAME: ap-northeast-1
+
+jobs:
+  pr_agent_job:
+    if: |
+      github.event.sender.type != 'Bot'
+      && github.event.pull_request.draft == false
+      && !startsWith(github.head_ref, 'release')
+      && !startsWith(github.head_ref, 'doc')
+    name: Run PR Agent
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+      contents: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_PR_AGENT_ROLE }}
+          aws-region: ${{ env.REGION_NAME }}
+
+      - name: PR Agent action step
+        id: pragent
+        uses: qodo-ai/pr-agent@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          config.model: ${{ secrets.AWS_PR_AGENT_MODEL }}
+          config.model_turbo: ${{ secrets.AWS_PR_AGENT_MODEL }}
+          config.fallback_models: ${{ secrets.AWS_PR_AGENT_MODEL }}
+          github_action_config.auto_review: true
+          github_action_config.auto_describe: true
+          github_action_config.auto_improve: true
+          github_action_config.pr_actions: '["opened", "reopened", "synchronize", "ready_for_review"]'
+          pr_reviewer.inline_code_comments: true
+          pr_reviewer.extra_instructions: 'answer in Japanese'
+          pr_description.extra_instructions: 'answer in Japanese'
+          pr_questions.extra_instructions: 'answer in Japanese'
+          pr_code_suggestions.extra_instructions: 'answer in Japanese'
+          pr_update_changelog.extra_instructions: 'answer in Japanese'
