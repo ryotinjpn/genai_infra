@@ -9,12 +9,14 @@ client_secret = ""
 redirect_uri = ""
 scopes = ["tweet.read", "tweet.write", "users.read", "offline.access"]
 
-code_verifier = base64.urlsafe_b64encode(os.urandom(30)).decode("utf-8")
-code_verifier = code_verifier.replace("=", "")
+code_verifier = (
+    base64.urlsafe_b64encode(os.urandom(30)).decode("utf-8").replace("=", "")
+)
 
 code_challenge = hashlib.sha256(code_verifier.encode("utf-8")).digest()
-code_challenge = base64.urlsafe_b64encode(code_challenge).decode("utf-8")
-code_challenge = code_challenge.replace("=", "")
+code_challenge = (
+    base64.urlsafe_b64encode(code_challenge).decode("utf-8").replace("=", "")
+)
 
 params = {
     "response_type": "code",
@@ -50,10 +52,12 @@ headers = {
     "Authorization": f"Basic {auth}",
     "Content-Type": "application/x-www-form-urlencoded",
 }
-req = urllib.request.Request("https://api.x.com/2/oauth2/token", encoded_data, headers)
+response = urllib.request.Request(
+    "https://api.x.com/2/oauth2/token", encoded_data, headers
+)
 
 try:
-    with urllib.request.urlopen(req) as res:
+    with urllib.request.urlopen(response) as res:
         body = res.read()
         print(body)
 except urllib.error.HTTPError as e:
