@@ -2,7 +2,7 @@ name: PR Agent Review
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize, ready_for_review]
+    types: [opened, reopened, ready_for_review]
     branches-ignore:
       - 'release/**'
       - 'doc/**'
@@ -45,7 +45,7 @@ jobs:
           github_action_config.auto_review: true
           github_action_config.auto_describe: true
           github_action_config.auto_improve: true
-          github_action_config.pr_actions: '["opened", "reopened", "synchronize", "ready_for_review"]'
+          github_action_config.pr_actions: '["opened", "reopened", "ready_for_review"]'
           pr_reviewer.inline_code_comments: true
           pr_reviewer.extra_instructions: 'answer in Japanese'
           pr_description.extra_instructions: 'answer in Japanese'
