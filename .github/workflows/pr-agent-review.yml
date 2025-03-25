@@ -8,7 +8,7 @@ on:
       - 'doc/**'
 
 env:
-  REGION_NAME: ap-northeast-1
+  BEDROCK_REGION_NAME: us-east-1
 
 jobs:
   pr_agent_job:
@@ -32,7 +32,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_PR_AGENT_ROLE }}
-          aws-region: ${{ env.REGION_NAME }}
+          aws-region: ${{ env.BEDROCK_REGION_NAME }}
 
       - name: PR Agent action step
         id: pragent
