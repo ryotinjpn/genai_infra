@@ -133,7 +133,7 @@ def get_x_to_posts(access_token: str):
         "Authorization": f"Bearer {access_token}",
     }
     try:
-        print("ポスト一覧得開始")
+        print("ポスト一覧取得開始")
         response = requests.get(
             f"https://api.twitter.com/2/users/{user_id}/tweets",
             headers=headers,
@@ -141,7 +141,7 @@ def get_x_to_posts(access_token: str):
         )
         response.raise_for_status()
 
-        print("ポスト一覧得完了")
+        print("ポスト一覧取得完了")
         return response.json()
     except Exception as e:
         if response.status_code == 429:
