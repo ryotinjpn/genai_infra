@@ -11,9 +11,6 @@ module "lambda_generate_post_to_x" {
 
 module "dynamodb" {
   source = "../../modules/dynamodb"
-
-  project_name = local.project_name
-  environment  = local.environment
 }
 
 module "gha" {
