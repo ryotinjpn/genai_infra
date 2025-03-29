@@ -27,6 +27,7 @@ resource "aws_lambda_function" "main" {
   ]
   environment {
     variables = {
+      TZ                  = "Asia/Tokyo"
       MODEL_ID            = var.model_id
       X_API_CLIENT_ID     = "/${var.project_name}/${var.environment}/X_API_CLIENT_ID"
       X_API_CLIENT_SECRET = "/${var.project_name}/${var.environment}/X_API_CLIENT_SECRET"
@@ -58,6 +59,14 @@ resource "aws_cloudwatch_event_rule" "main" {
 resource "aws_cloudwatch_event_target" "main" {
   rule = aws_cloudwatch_event_rule.main.name
   arn  = aws_lambda_function.main.arn
+}
+
+# -------------------------------------
+# CloudWatch Logs
+# -------------------------------------
+resource "aws_cloudwatch_log_group" "main" {
+  name              = "/aws/lambda/${aws_lambda_function.main.function_name}"
+  retention_in_days = 30
 }
 
 # -------------------------------------
