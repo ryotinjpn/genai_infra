@@ -6,9 +6,11 @@ from datetime import datetime, timedelta, timezone
 
 import boto3
 import requests
+from ulid import ULID
 
 ssm_client = boto3.client("ssm")
 bedrock_client = boto3.client("bedrock-runtime", region_name="us-east-1")
+dynamodb_resource = boto3.resource("dynamodb").Table("GeneratePostToXHistory")
 model_id = os.environ["MODEL_ID"]
 
 
@@ -118,43 +120,11 @@ def print_x_rate_limit(headers):
     print(f"リセット時間（日本時間）: {formatted_time}")
 
 
-def get_x_to_posts(access_token: str):
-    """ポスト一覧を取得する
-
-    Args:
-        access_token (str): アクセストークン
-
-    Returns:
-        json: ポスト内容
-    """
-
-    user_id = get_parameter_store_value(os.environ.get("X_API_USER_ID"))
-    headers = {
-        "Authorization": f"Bearer {access_token}",
-    }
-    try:
-        print("ポスト一覧取得開始")
-        response = requests.get(
-            f"https://api.twitter.com/2/users/{user_id}/tweets",
-            headers=headers,
-            params={"max_results": "60"},
-        )
-        response.raise_for_status()
-
-        print("ポスト一覧取得完了")
-        return response.json()
-    except Exception as e:
-        if response.status_code == 429:
-            print_x_rate_limit(response.headers)
-        print(f"ポスト一覧取得エラー: {e}")
-        raise
-
-
-def generate_post(posts: json):
+def generate_post(post_history: str):
     """ポスト内容を生成する
 
     Args:
-        posts (json): ポスト一覧
+        post_history (str): ポスト投稿履歴
 
     Returns:
         str: ポスト投稿内容
@@ -162,15 +132,16 @@ def generate_post(posts: json):
 
     prompt = f"""
         あなたはAWSに関する知識を持つ高度な AI エージェントです。
-        AWSドキュメントからランダムにトピックを選んで下さい。
-        技術者向けに、高度なトピックを選んで要約して下さい。
-        {posts}に含まれる内容は除外して下さい。
+        AWSドキュメントからサービスをランダムに選んで下さい。
+        選んだサービスから技術者向け、トピックを選んで要約して下さい。
+
         タイトル以外は箇条書きにし、論文調にして下さい。
         参考にした日本語版AWSドキュメントURLを表示して下さい。
-        日本語版AWSドキュメントURLがない場合英語版を表示して下さい。
+
+        下記に含まれる内容は除外して下さい。
+        {post_history}
 
         下記の形式で出力して下さい。
-
         【タイトル】
         ・要約
         AWSドキュメントURL
@@ -237,15 +208,58 @@ def create_x_to_posts(access_token: str, new_post: str):
         raise
 
 
+def get_post_history():
+    """DynamoDBからポスト投稿履歴を取得する
+
+    Returns:
+        str: ポスト投稿履歴
+    """
+
+    try:
+        response = dynamodb_resource.scan()
+        items = response.get("Items", [])
+        post_histories = [item.get("PostContent") for item in items]
+        post_histories = "\n".join(post_histories)
+        print(post_histories)
+        return post_histories
+    except Exception as e:
+        print(f"DynamoDBポスト投稿履歴取得エラー: {e}")
+        raise
+
+
+def put_post_history(post: str):
+    """DynamoDBへポスト投稿内容保存
+
+    Args:
+        post (str): ポスト投稿内容
+    """
+
+    now = datetime.now()
+    try:
+        dynamodb_resource.put_item(
+            Item={
+                "HistoryId": str(ULID()),
+                "PostContent": post,
+                "Timestamp": now.strftime("%Y-%m-%d %H:%M:%S"),
+                "ExpireAt": int((now + timedelta(days=30)).timestamp()),
+            }
+        )
+        print("DynamoDBポスト投稿内容保存完了")
+    except Exception as e:
+        print(f"DynamoDBポスト投稿内容保存エラー: {e}")
+        raise
+
+
 def lambda_handler(event, _):
     """Lambdaエントリーポイント"""
 
     try:
+        post_history = get_post_history()
+        new_post = generate_post(post_history)
         access_token = get_x_access_token()
-        posts = get_x_to_posts(access_token)
-        new_post = generate_post(posts)
         create_x_to_posts(access_token, new_post)
+        put_post_history(new_post)
 
-        return {"statusCode": 200, "message": "処理成功"}
+        return {"status_code": 200, "message": "処理成功"}
     except Exception as e:
-        return {"statusCode": 500, "message": "処理失敗", "error": str(e)}
+        return {"status_code": 500, "message": "処理失敗", "error": str(e)}

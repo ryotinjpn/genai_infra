@@ -12,9 +12,9 @@ resource "aws_iam_role" "main" {
 }
 
 resource "aws_iam_policy" "main" {
-  name        = "GHAPRAgentAccessForBedrock-${var.project_name}-${var.environment}"
-  path        = "/service-role/"
-  policy      = data.aws_iam_policy_document.bedrock.json
+  name   = "GHAPRAgentAccessForBedrock-${var.project_name}-${var.environment}"
+  path   = "/service-role/"
+  policy = data.aws_iam_policy_document.bedrock.json
 }
 
 resource "aws_iam_role_policy_attachment" "main" {

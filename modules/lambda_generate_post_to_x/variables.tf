@@ -31,3 +31,9 @@ variable "model_id" {
   description = "Enter the model id."
   nullable    = false
 }
+
+variable "dynamodb_table_name" {
+  type        = string
+  description = "Enter the DynamoDB Table Name."
+  nullable    = false
+}

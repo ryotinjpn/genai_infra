@@ -61,7 +61,15 @@ data "aws_iam_policy_document" "lambda_role" {
       "logs:CreateLogStream",
       "logs:PutLogEvents",
     ]
-    resources = ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.self.id}:log-group:/aws/lambda/*"]
+    resources = ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.self.id}:log-group:/aws/lambda/${aws_lambda_function.main.function_name}"]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "dynamodb:Scan",
+      "dynamodb:PutItem",
+    ]
+    resources = ["arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.self.id}:table/${var.dynamodb_table_name}"]
   }
   statement {
     effect = "Allow"
