@@ -1,5 +1,6 @@
 setup:
 	brew install tfenv
+	tfenv install 1.10.5
 	brew install tflint
 	brew install aquasecurity/trivy/trivy
 
