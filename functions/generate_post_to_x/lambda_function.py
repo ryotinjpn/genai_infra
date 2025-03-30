@@ -1,5 +1,6 @@
 import base64
 import json
+import logging
 import os
 import urllib.parse
 from datetime import datetime, timedelta, timezone
@@ -7,6 +8,9 @@ from datetime import datetime, timedelta, timezone
 import boto3
 import requests
 from ulid import ULID
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 ssm_client = boto3.client("ssm")
 bedrock_client = boto3.client("bedrock-runtime", region_name="us-east-1")
@@ -54,9 +58,9 @@ def update_ssm_parameter(new_refresh_token: str):
             Type="SecureString",
             Overwrite=True,
         )
-        print("SSMパラメータ更新完了")
+        logger.info("SSMパラメータ更新完了")
     except Exception as e:
-        print(f"SSMパラメータ更新エラー: {e}")
+        logger.exception(f"SSMパラメータ更新エラー: {e}")
         raise
 
 
@@ -78,7 +82,7 @@ def get_x_access_token():
     }
     data = {"grant_type": "refresh_token", "refresh_token": refresh_token}
     try:
-        print("アクセストークン取得開始")
+        logger.info("アクセストークン取得開始")
         response = requests.post(
             "https://api.twitter.com/2/oauth2/token", headers=headers, data=data
         )
@@ -93,10 +97,10 @@ def get_x_access_token():
             raise ValueError("リフレッシュトークン取得できませんでした")
         update_ssm_parameter(new_refresh_token)
 
-        print("アクセストークン取得完了")
+        logger.info("アクセストークン取得完了")
         return access_token
     except Exception as e:
-        print(f"アクセストークン取得エラー: {e}")
+        logger.exception(f"アクセストークン取得エラー: {e}")
         raise
 
 
@@ -109,15 +113,15 @@ def print_x_rate_limit(headers):
 
     limit = int(headers.get("x-rate-limit-limit"))
     remaining = int(headers.get("x-rate-limit-remaining"))
-    print(f"エンドポイントレート制限上限: {limit}")
-    print(f"5分間実行可能残リクエスト件数: {remaining}")
+    logger.warning(f"エンドポイントレート制限上限: {limit}")
+    logger.warning(f"5分間実行可能残リクエスト件数: {remaining}")
 
     reset = int(headers.get("x-rate-limit-reset"))
     reset_time_utc = datetime.fromtimestamp(reset, tz=timezone.utc)
     formatted_time = reset_time_utc.astimezone(timezone(timedelta(hours=9))).strftime(
         "%Y年%m月%d日 %H時%M分%S秒"
     )
-    print(f"リセット時間（日本時間）: {formatted_time}")
+    logger.warning(f"リセット時間（日本時間）: {formatted_time}")
 
 
 def generate_post(post_history: str):
@@ -172,11 +176,11 @@ def generate_post(post_history: str):
         )
         response_body = json.loads(response["body"].read())
         generate_post = response_body["content"][0]["text"]
-        print(generate_post)
+        logger.info(generate_post)
 
         return generate_post
     except Exception as e:
-        print(f"ポスト投稿内容生成エラー: {e}")
+        logger.exception(f"ポスト投稿内容生成エラー: {e}")
         raise
 
 
@@ -194,17 +198,60 @@ def create_x_to_posts(access_token: str, new_post: str):
     }
     payload = {"for_super_followers_only": False, "nullcast": False, "text": new_post}
     try:
-        print("ポスト投稿開始")
+        logger.info("ポスト投稿開始")
         response = requests.post(
             "https://api.twitter.com/2/tweets", json=payload, headers=headers
         )
         response.raise_for_status()
 
-        print("ポスト投稿完了")
+        logger.info("ポスト投稿完了")
     except Exception as e:
         if response.status_code == 429:
             print_x_rate_limit(response.headers)
-        print(f"ポスト投稿エラー: {e}")
+        logger.exception(f"ポスト投稿エラー: {e}")
+        raise
+
+
+def get_post_history():
+    """DynamoDBからポスト投稿履歴を取得する
+
+    Returns:
+        str: ポスト投稿履歴
+    """
+
+    try:
+        response = dynamodb_resource.scan()
+        items = response.get("Items", [])
+        post_histories = [item.get("PostContent") for item in items]
+        post_histories = "\n".join(post_histories)
+        logger.info(post_histories)
+        return post_histories
+    except Exception as e:
+        logger.exception(f"DynamoDBポスト投稿履歴取得エラー: {e}")
+        raise
+
+
+def put_post_history(post: str):
+    """DynamoDBへポスト投稿内容保存
+
+    Args:
+        post (str): ポスト投稿内容
+    """
+
+    now = datetime.now()
+    try:
+        dynamodb_resource.put_item(
+            Item={
+                "HistoryId": str(ULID()),
+                "PostContent": post,
+                "Timestamp": now.strftime("%Y-%m-%d %H:%M:%S"),
+                "ExpireAt": int((now + timedelta(days=30)).timestamp()),
+            }
+        )
+        logger.info("DynamoDBポスト投稿内容保存完了")
+    except Exception as e:
+        print(f"DynamoDBポスト投稿内容保存エラー: {e}")
+        logger.exception(f"DynamoDBポスト投稿内容保存エラー: {e}")
         raise
 
 
