@@ -104,26 +104,6 @@ def get_x_access_token():
         raise
 
 
-def print_x_rate_limit(headers):
-    """レート制限エラーを出力する
-
-    Args:
-        headers (json): レスポンスヘッダー
-    """
-
-    limit = int(headers.get("x-rate-limit-limit"))
-    remaining = int(headers.get("x-rate-limit-remaining"))
-    logger.warning(f"エンドポイントレート制限上限: {limit}")
-    logger.warning(f"5分間実行可能残リクエスト件数: {remaining}")
-
-    reset = int(headers.get("x-rate-limit-reset"))
-    reset_time_utc = datetime.fromtimestamp(reset, tz=timezone.utc)
-    formatted_time = reset_time_utc.astimezone(timezone(timedelta(hours=9))).strftime(
-        "%Y年%m月%d日 %H時%M分%S秒"
-    )
-    logger.warning(f"リセット時間（日本時間）: {formatted_time}")
-
-
 def generate_post(post_history: str):
     """ポスト内容を生成する
 
@@ -184,6 +164,26 @@ def generate_post(post_history: str):
         raise
 
 
+def log_x_rate_limit(headers):
+    """レート制限エラーを出力する
+
+    Args:
+        headers (json): レスポンスヘッダー
+    """
+
+    limit = int(headers.get("x-rate-limit-limit"))
+    remaining = int(headers.get("x-rate-limit-remaining"))
+    logger.warning(f"エンドポイントレート制限上限: {limit}")
+    logger.warning(f"5分間実行可能残リクエスト件数: {remaining}")
+
+    reset = int(headers.get("x-rate-limit-reset"))
+    reset_time_utc = datetime.fromtimestamp(reset, tz=timezone.utc)
+    formatted_time = reset_time_utc.astimezone(timezone(timedelta(hours=9))).strftime(
+        "%Y年%m月%d日 %H時%M分%S秒"
+    )
+    logger.warning(f"リセット時間（日本時間）: {formatted_time}")
+
+
 def create_x_to_posts(access_token: str, new_post: str):
     """ポスト投稿をする
 
@@ -207,7 +207,7 @@ def create_x_to_posts(access_token: str, new_post: str):
         logger.info("ポスト投稿完了")
     except Exception as e:
         if response.status_code == 429:
-            print_x_rate_limit(response.headers)
+            log_x_rate_limit(response.headers)
         logger.exception(f"ポスト投稿エラー: {e}")
         raise
 
@@ -250,7 +250,6 @@ def put_post_history(post: str):
         )
         logger.info("DynamoDBポスト投稿内容保存完了")
     except Exception as e:
-        print(f"DynamoDBポスト投稿内容保存エラー: {e}")
         logger.exception(f"DynamoDBポスト投稿内容保存エラー: {e}")
         raise
 
@@ -270,30 +269,7 @@ def get_post_history():
         print(post_histories)
         return post_histories
     except Exception as e:
-        print(f"DynamoDBポスト投稿履歴取得エラー: {e}")
-        raise
-
-
-def put_post_history(post: str):
-    """DynamoDBへポスト投稿内容保存
-
-    Args:
-        post (str): ポスト投稿内容
-    """
-
-    now = datetime.now()
-    try:
-        dynamodb_resource.put_item(
-            Item={
-                "HistoryId": str(ULID()),
-                "PostContent": post,
-                "Timestamp": now.strftime("%Y-%m-%d %H:%M:%S"),
-                "ExpireAt": int((now + timedelta(days=30)).timestamp()),
-            }
-        )
-        print("DynamoDBポスト投稿内容保存完了")
-    except Exception as e:
-        print(f"DynamoDBポスト投稿内容保存エラー: {e}")
+        logger.exception(f"DynamoDBポスト投稿履歴取得エラー: {e}")
         raise
 
 
