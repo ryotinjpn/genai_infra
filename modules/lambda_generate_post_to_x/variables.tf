@@ -3,12 +3,12 @@
 # -------------------------------------
 variable "project_name" {
   type        = string
-  description = "Enter the project name."
+  description = "Enter the Project Name."
   nullable    = false
 }
 
 variable "environment" {
-  description = "Enter the environment."
+  description = "Enter the Environment."
   type        = string
   nullable    = false
   validation {
@@ -22,13 +22,19 @@ variable "environment" {
 # -------------------------------------
 variable "bedrock_region" {
   type        = string
-  description = "Enter the Bedrock region."
+  description = "Enter the Bedrock Region."
   nullable    = false
 }
 
 variable "model_id" {
   type        = string
-  description = "Enter the model id."
+  description = "Enter the Model ID."
+  nullable    = false
+}
+
+variable "lambda_layer_arn" {
+  type        = string
+  description = "Enter the Lambda Layer Arn."
   nullable    = false
 }
 
