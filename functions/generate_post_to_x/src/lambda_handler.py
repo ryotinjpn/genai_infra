@@ -11,8 +11,7 @@ def lambda_handler(event, _):
     try:
         post_history = dynamodb_resource.get_post_history()
         new_post = bedrock.generate_post(post_history)
-        access_token = x_api.get_x_access_token()
-        x_api.create_x_to_posts(access_token, new_post)
+        x_api.create_x_to_posts(new_post)
         dynamodb_resource.put_post_history(new_post)
 
         return {"status_code": 200, "message": "処理成功"}
