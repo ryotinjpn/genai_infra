@@ -17,6 +17,17 @@ module "lambda_generate_post_to_x" {
   dynamodb_table_name = module.dynamodb.generate_post_to_x_name
 }
 
+module "lambda_generate_message_to_line" {
+  source = "../../modules/lambda_generate_message_to_line"
+
+  project_name = local.project_name
+  environment  = local.environment
+
+  bedrock_region   = local.bedrock_region
+  model_id         = local.model_id
+  lambda_layer_arn = module.lambda_layer.lambda_layer_arn
+}
+
 module "lambda_save_target_id_to_line" {
   source = "../../modules/lambda_save_target_id_to_line"
 

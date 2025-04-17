@@ -2,8 +2,8 @@
 # Lambda Function
 # -------------------------------------
 resource "aws_lambda_function" "main" {
-  function_name    = "${var.project_name}-${var.environment}-generate-post-to-x"
-  description      = "Xの投稿内容を自動生成し投稿する Lambda 関数"
+  function_name    = "${var.project_name}-${var.environment}-generate-message-to-line"
+  description      = "LINEへプッシュメッセージを送信する Lambda 関数"
   handler          = "lambda_handler.lambda_handler"
   memory_size      = 128
   timeout          = 900
@@ -17,11 +17,10 @@ resource "aws_lambda_function" "main" {
   ]
   environment {
     variables = {
-      TZ                  = "Asia/Tokyo"
-      MODEL_ID            = var.model_id
-      X_API_CLIENT_ID     = "/${var.project_name}/${var.environment}/X_API_CLIENT_ID"
-      X_API_CLIENT_SECRET = "/${var.project_name}/${var.environment}/X_API_CLIENT_SECRET"
-      X_API_REFRESH_TOKEN = "/${var.project_name}/${var.environment}/X_API_REFRESH_TOKEN"
+      TZ                            = "Asia/Tokyo"
+      MODEL_ID                      = var.model_id
+      LINE_API_CHANNEL_ACCESS_TOKEN = "/${var.project_name}/${var.environment}/LINE_API_CHANNEL_ACCESS_TOKEN"
+      LINE_API_TARGET_ID            = "/${var.project_name}/${var.environment}/LINE_API_TARGET_ID"
     }
   }
 }
@@ -40,9 +39,9 @@ resource "aws_lambda_permission" "main" {
 # EventBridge
 # -------------------------------------
 resource "aws_cloudwatch_event_rule" "main" {
-  name                = "notice-generate-post-to-x-jst-1100"
-  description         = "11:00 の時間検知 Event をトリガーに Lambda function (${aws_lambda_function.main.function_name}) を起動"
-  schedule_expression = "cron(0 2 * * ? *)"
+  name                = "notice-generate-message-to-line-jst-0800"
+  description         = "8:00 の時間検知 Event をトリガーに Lambda function (${aws_lambda_function.main.function_name}) を起動"
+  schedule_expression = "cron(0 23 * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "main" {
@@ -62,7 +61,7 @@ resource "aws_cloudwatch_log_group" "main" {
 # IAM
 # -------------------------------------
 resource "aws_iam_role" "main" {
-  name               = "LambdaRoleForGeneratePostToX-${var.project_name}-${var.environment}"
+  name               = "LambdaRoleForGenerateMessageToLine-${var.project_name}-${var.environment}"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
@@ -72,6 +71,6 @@ resource "aws_iam_role_policy_attachment" "main" {
 }
 
 resource "aws_iam_policy" "main" {
-  name   = "LambdaAccessForGeneratePostToX-${var.project_name}-${var.environment}"
+  name   = "LambdaRoleForGenerateMessageToLine-${var.project_name}-${var.environment}"
   policy = data.aws_iam_policy_document.lambda_role.json
 }
