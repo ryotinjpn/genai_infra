@@ -14,7 +14,7 @@ resource "aws_lambda_layer_version" "main" {
 resource "aws_lambda_function" "main" {
   function_name    = "${var.project_name}-${var.environment}-generate-post-to-x"
   description      = "Xの投稿内容を自動生成し投稿する Lambda 関数"
-  handler          = "lambda_function.lambda_handler"
+  handler          = "lambda_handler.lambda_handler"
   memory_size      = 128
   timeout          = 900
   runtime          = "python3.13"
