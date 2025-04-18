@@ -17,8 +17,9 @@ resource "aws_lambda_function" "main" {
   ]
   environment {
     variables = {
-      TZ                 = "Asia/Tokyo"
-      LINE_API_TARGET_ID = "/${var.project_name}/${var.environment}/LINE_API_TARGET_ID"
+      TZ                      = "Asia/Tokyo"
+      LINE_API_TARGET_ID      = "/${var.project_name}/${var.environment}/LINE_API_TARGET_ID"
+      IS_UPDATE_SSM_PARAMETER = 1
     }
   }
 }

@@ -1,6 +1,9 @@
 import json
+import os
 
 import ssm
+
+is_update_ssm_parameter = bool(int(os.environ["IS_UPDATE_SSM_PARAMETER"]))
 
 
 def lambda_handler(event, _):
@@ -20,7 +23,8 @@ def lambda_handler(event, _):
             case _:
                 return {"status_code": 400, "message": "不正なソースタイプ"}
 
-        ssm.update_ssm_parameter(target_id)
+        if is_update_ssm_parameter:
+            ssm.update_ssm_parameter(target_id)
 
         return {"status_code": 200, "message": "処理成功"}
     except Exception as e:
