@@ -19,6 +19,7 @@ resource "aws_lambda_function" "main" {
     variables = {
       TZ                            = "Asia/Tokyo"
       MODEL_ID                      = var.model_id
+      BRAVE_API_KEY                 = "/${var.project_name}/${var.environment}/BRAVE_API_KEY"
       LINE_API_CHANNEL_ACCESS_TOKEN = "/${var.project_name}/${var.environment}/LINE_API_CHANNEL_ACCESS_TOKEN"
       LINE_API_TARGET_ID            = "/${var.project_name}/${var.environment}/LINE_API_TARGET_ID"
     }

@@ -11,21 +11,43 @@ bedrock_client = boto3.client("bedrock-runtime", region_name="us-east-1")
 model_id = os.environ["MODEL_ID"]
 
 
-def generate_messages(brave_response: str):
+def get_weather_prompt(text: str):
+    """ "天気情報を取得するプロンプトを生成する
+    Args:
+        text (str): 天気情報
+    Returns:
+        str: 天気情報を取得するプロンプト
+    """
+
+    return f"""
+        あなたは天気情報に関する知識を持つ私の親しい友人です。フランクでカジュアルな感じで、話してください
+        次のHTML文書はWebページの本文です
+        次のHTML文書は天気情報です
+        HTMLタグの構造を参考にしながら、セクションごとの重要な情報を要約して下さい
+
+        {text}
+
+        要約は適切に改行を行い読みやすくして下さい
+        要約はあいさつなしで本題から始めて下さい
+        要約は絵文字も利用してポップな形式にして下さい
+        タイトルに天気情報の絵文字を入れて下さい
+        タイトルの前に#を入れないで下さい
+        以上を考慮し下記の形式で出力して下さい
+        【タイトル】
+        要約
+
+        タイトル、要約含めて130文字以上140文字以下にして下さい
+    """
+
+
+def generate_messages(text: str):
     """メッセージ内容を生成する
 
     Args:
-        brave_response (str): brave apiから取得した情報
+        text (str): メッセージ内容元情報
 
     Returns:
         str: ポスト投稿内容
-    """
-
-    prompt = f"""
-        下記を要約してください
-        {brave_response}
-
-        130文字以上140文字以下にして下さい
     """
 
     body = json.dumps(
@@ -37,7 +59,7 @@ def generate_messages(brave_response: str):
             "messages": [
                 {
                     "role": "user",
-                    "content": [{"type": "text", "text": prompt}],
+                    "content": [{"type": "text", "text": text}],
                 }
             ],
         }
