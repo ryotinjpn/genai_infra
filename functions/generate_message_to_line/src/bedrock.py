@@ -13,8 +13,10 @@ model_id = os.environ["MODEL_ID"]
 
 def get_weather_prompt(text: str):
     """天気情報を要約するプロンプトを生成する
+
     Args:
         text (str): 天気情報
+
     Returns:
         str: 天気情報を要約するプロンプト
     """
@@ -42,8 +44,10 @@ def get_weather_prompt(text: str):
 
 def get_news_prompt(text: str):
     """ニュース情報を要約するプロンプトを生成する
+
     Args:
         text (str): ニュース情報
+
     Returns:
         str: ニュース情報を要約するプロンプト
     """
