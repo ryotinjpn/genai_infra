@@ -1,10 +1,49 @@
 import logging
 
+import jmespath
 import requests
 from bs4 import BeautifulSoup
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+DEL_HTML_TAG_LIST = [
+    "script",
+    "style",
+    "nav",
+    "header",
+    "footer",
+    "aside",
+    "noscript",
+    "iframe",
+    "img",
+    "svg",
+    "path",
+]
+
+DEL_HTML_CLASS_LIST = [
+    "ads",
+    "ad-",
+    "banner",
+    "menu",
+    "nav",
+    "sidebar",
+    "footer",
+    "comments",
+    "related",
+]
+
+DEL_HTML_ID_LIST = [
+    "ads",
+    "ad-",
+    "banner",
+    "menu",
+    "nav",
+    "sidebar",
+    "footer",
+    "comments",
+    "related",
+]
 
 
 def cleaned_html(html_json):
@@ -17,11 +56,14 @@ def cleaned_html(html_json):
         list: 整形後のHTML
     """
 
+    urls = jmespath.search("web.results[*].url", html_json)
     cleaned_htmls = []
     logger.info("HTML整形処理開始")
-    for item in html_json.get("web", {}).get("results", []):
-        response = requests.get(item.get("url"))
+    for url in urls:
+        print(url)
+        response = requests.get(url)
         response.raise_for_status()
+        response.encoding = "utf-8"
 
         # BeautifulSoupでHTMLを解析
         soup = BeautifulSoup(response.text, "html.parser")
@@ -32,62 +74,28 @@ def cleaned_html(html_json):
         if body_tag:
             body_soup = BeautifulSoup(str(body_tag), "html.parser")
 
-            for tag in body_soup.find_all(
-                [
-                    "script",
-                    "style",
-                    "nav",
-                    "header",
-                    "footer",
-                    "aside",
-                    "noscript",
-                    "iframe",
-                    "img",
-                ]
-            ):
+            for tag in body_soup.find_all(DEL_HTML_TAG_LIST):
                 tag.decompose()
 
-            unwanted_classes = [
-                "ads",
-                "ad-",
-                "banner",
-                "menu",
-                "nav",
-                "sidebar",
-                "footer",
-                "comments",
-                "related",
-            ]
-            for class_name in unwanted_classes:
+            for class_name in DEL_HTML_CLASS_LIST:
                 for tag in body_soup.find_all(
                     class_=lambda x: x and class_name in x.lower()
                 ):
                     tag.decompose()
 
-            unwanted_ids = [
-                "ads",
-                "ad-",
-                "banner",
-                "menu",
-                "nav",
-                "sidebar",
-                "footer",
-                "comments",
-                "related",
-            ]
-            for id_name in unwanted_ids:
+            for id_name in DEL_HTML_ID_LIST:
                 for tag in body_soup.find_all(id=lambda x: x and id_name in x.lower()):
                     tag.decompose()
-            cleaned_html = body_soup.prettify()
+            cleaned_html = body_soup.get_text(separator="\n", strip=True)
         else:
             # bodyタグがない場合はHTMLの全テキストを返す
             for tag in soup.find_all(["script", "style"]):
                 tag.decompose()
-            cleaned_html = soup.prettify()
-
+            cleaned_html = soup.get_text(separator="\n", strip=True)
         cleaned_htmls.append(cleaned_html)
-        logger.info("HTML整形処理完了")
-        return cleaned_htmls
+
+    logger.info("HTML整形処理完了")
+    return cleaned_htmls
 
 
 def search_brave(brave_api_key: str, keyword: str):
