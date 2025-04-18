@@ -12,7 +12,7 @@ def push_line_to_messages(messages: str):
     """LINEへプッシュメッセージを送信する
 
     Args:
-        push_line_to_ (str): 送信内容
+        messages (str): 送信内容
     """
 
     channel_access_token = ssm.get_parameter_store_value(
