@@ -7,7 +7,7 @@ resource "aws_lambda_function" "main" {
   handler          = "lambda_handler.lambda_handler"
   memory_size      = 128
   timeout          = 900
-  runtime          = "python3.13"
+  runtime          = var.lambda_runtime_python
   role             = aws_iam_role.main.arn
   filename         = local.lambda_zip_path
   source_code_hash = data.archive_file.main.output_base64sha256

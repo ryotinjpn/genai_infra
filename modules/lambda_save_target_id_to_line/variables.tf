@@ -20,6 +20,12 @@ variable "environment" {
 # -------------------------------------
 # Lambda
 # -------------------------------------
+variable "lambda_runtime_python" {
+  type        = string
+  description = "Enter the Lambda Runtime Python."
+  nullable    = false
+}
+
 variable "lambda_layer_arn" {
   type        = string
   description = "Enter the Lambda Layer Arn."

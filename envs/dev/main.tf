@@ -3,6 +3,8 @@ module "lambda_layer" {
 
   project_name = local.project_name
   environment  = local.environment
+
+  lambda_runtime_python = local.lambda_runtime_python
 }
 
 module "lambda_generate_post_to_x" {
@@ -11,10 +13,11 @@ module "lambda_generate_post_to_x" {
   project_name = local.project_name
   environment  = local.environment
 
-  bedrock_region      = local.bedrock_region
-  model_id            = local.model_id
-  lambda_layer_arn    = module.lambda_layer.lambda_layer_arn
-  dynamodb_table_name = module.dynamodb.generate_post_to_x_name
+  bedrock_region        = local.bedrock_region
+  model_id              = local.model_id
+  lambda_runtime_python = local.lambda_runtime_python
+  lambda_layer_arn      = module.lambda_layer.lambda_layer_arn
+  dynamodb_table_name   = module.dynamodb.generate_post_to_x_name
 }
 
 module "lambda_generate_message_to_line" {
@@ -23,9 +26,10 @@ module "lambda_generate_message_to_line" {
   project_name = local.project_name
   environment  = local.environment
 
-  bedrock_region   = local.bedrock_region
-  model_id         = local.model_id
-  lambda_layer_arn = module.lambda_layer.lambda_layer_arn
+  bedrock_region        = local.bedrock_region
+  model_id              = local.model_id
+  lambda_runtime_python = local.lambda_runtime_python
+  lambda_layer_arn      = module.lambda_layer.lambda_layer_arn
 }
 
 module "lambda_save_target_id_to_line" {
@@ -34,7 +38,8 @@ module "lambda_save_target_id_to_line" {
   project_name = local.project_name
   environment  = local.environment
 
-  lambda_layer_arn = module.lambda_layer.lambda_layer_arn
+  lambda_runtime_python = local.lambda_runtime_python
+  lambda_layer_arn      = module.lambda_layer.lambda_layer_arn
 }
 
 module "dynamodb" {

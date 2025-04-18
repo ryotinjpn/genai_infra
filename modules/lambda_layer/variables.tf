@@ -16,3 +16,12 @@ variable "environment" {
     error_message = "environment must be one of the following: [sandbox, dev, stg, prd]."
   }
 }
+
+# -------------------------------------
+# Lambda
+# -------------------------------------
+variable "lambda_runtime_python" {
+  type        = string
+  description = "Enter the Lambda Runtime Python."
+  nullable    = false
+}
