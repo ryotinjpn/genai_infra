@@ -2,8 +2,8 @@
 # Lambda Function
 # -------------------------------------
 resource "aws_lambda_function" "main" {
-  function_name    = "${var.project_name}-${var.environment}-save-target-id-to-line"
-  description      = "LINE API Webhookから送信先IDを取得する Lambda 関数"
+  function_name    = "${var.project_name}-${var.environment}-webhook-to-line"
+  description      = "LINE API Webhookからイベントを受信する Lambda 関数"
   handler          = "lambda_handler.lambda_handler"
   memory_size      = 128
   timeout          = 900
@@ -17,9 +17,12 @@ resource "aws_lambda_function" "main" {
   ]
   environment {
     variables = {
-      TZ                      = "Asia/Tokyo"
-      LINE_API_TARGET_ID      = "/${var.project_name}/${var.environment}/LINE_API_TARGET_ID"
-      IS_UPDATE_SSM_PARAMETER = 0
+      TZ                            = "Asia/Tokyo"
+      MODEL_ID                      = var.model_id
+      LINE_API_CHANNEL_ACCESS_TOKEN = "/${var.project_name}/${var.environment}/LINE_API_CHANNEL_ACCESS_TOKEN"
+      LINE_API_CHANNEL_USER_ID      = "/${var.project_name}/${var.environment}/LINE_API_CHANNEL_USER_ID"
+      LINE_API_TARGET_ID            = "/${var.project_name}/${var.environment}/LINE_API_TARGET_ID"
+      IS_UPDATE_SSM_PARAMETER       = 0
     }
   }
 }
@@ -41,7 +44,7 @@ resource "aws_cloudwatch_log_group" "main" {
 # IAM
 # -------------------------------------
 resource "aws_iam_role" "main" {
-  name               = "LambdaRoleForSaveTargetIdToLine-${var.project_name}-${var.environment}"
+  name               = "LambdaRoleForWebhookToLine-${var.project_name}-${var.environment}"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
@@ -51,6 +54,6 @@ resource "aws_iam_role_policy_attachment" "main" {
 }
 
 resource "aws_iam_policy" "main" {
-  name   = "LambdaRoleForSaveTargetIdToLine-${var.project_name}-${var.environment}"
+  name   = "LambdaRoleForWebhookToLine-${var.project_name}-${var.environment}"
   policy = data.aws_iam_policy_document.lambda_role.json
 }
