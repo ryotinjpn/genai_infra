@@ -32,12 +32,14 @@ module "lambda_generate_message_to_line" {
   lambda_layer_arn      = module.lambda_layer.lambda_layer_arn
 }
 
-module "lambda_save_target_id_to_line" {
-  source = "../../modules/lambda_save_target_id_to_line"
+module "lambda_webhook_to_line" {
+  source = "../../modules/lambda_webhook_to_line"
 
   project_name = local.project_name
   environment  = local.environment
 
+  bedrock_region        = local.bedrock_region
+  model_id              = local.model_id
   lambda_runtime_python = local.lambda_runtime_python
   lambda_layer_arn      = module.lambda_layer.lambda_layer_arn
 }
