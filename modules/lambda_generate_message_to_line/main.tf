@@ -29,42 +29,24 @@ resource "aws_lambda_function" "main" {
 # -------------------------------------
 # Lambda Permission
 # -------------------------------------
-resource "aws_lambda_permission" "eight_am" {
+resource "aws_lambda_permission" "main" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.main.function_name
   principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.eight_am.arn
-}
-
-resource "aws_lambda_permission" "five_pm" {
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.main.function_name
-  principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.five_pm.arn
+  source_arn    = aws_cloudwatch_event_rule.main.arn
 }
 
 # -------------------------------------
 # EventBridge
 # -------------------------------------
-resource "aws_cloudwatch_event_rule" "eight_am" {
-  name                = "notice-generate-message-to-line-jst-8-am"
-  description         = "AM8:00 の時間検知 Event をトリガーに Lambda function (${aws_lambda_function.main.function_name}) を起動"
-  schedule_expression = "cron(0 23 * * ? *)"
+resource "aws_cloudwatch_event_rule" "main" {
+  name                = "notice-generate-message-to-line-jst-7-am"
+  description         = "AM7:00 の時間検知 Event をトリガーに Lambda function (${aws_lambda_function.main.function_name}) を起動"
+  schedule_expression = "cron(0 22 * * ? *)"
 }
 
-resource "aws_cloudwatch_event_target" "eight_am" {
-  rule = aws_cloudwatch_event_rule.eight_am.name
-  arn  = aws_lambda_function.main.arn
-}
-
-resource "aws_cloudwatch_event_rule" "five_pm" {
-  name                = "notice-generate-message-to-line-jst-5-pm"
-  description         = "PM5:00 の時間検知 Event をトリガーに Lambda function (${aws_lambda_function.main.function_name}) を起動"
-  schedule_expression = "cron(0 8 * * ? *)"
-}
-
-resource "aws_cloudwatch_event_target" "five_pm" {
-  rule = aws_cloudwatch_event_rule.five_pm.name
+resource "aws_cloudwatch_event_target" "main" {
+  rule = aws_cloudwatch_event_rule.main.name
   arn  = aws_lambda_function.main.arn
 }
 
