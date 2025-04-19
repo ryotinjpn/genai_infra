@@ -58,10 +58,10 @@ def generate_reply_message(text: str):
             body=body,
         )
         response_body = json.loads(response["body"].read())
-        generate_post = response_body["content"][0]["text"]
-        logger.info(generate_post)
+        generate_reply_message = response_body["content"][0]["text"]
+        logger.info(generate_reply_message)
 
-        return generate_post
+        return generate_reply_message
     except Exception as e:
         logger.exception(f"回答内容生成エラー: {e}")
         raise
