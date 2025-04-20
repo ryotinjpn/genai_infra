@@ -2,3 +2,6 @@ requests==2.32.3
 boto3==1.37.17
 requests-oauthlib==2.0.0
 python-ulid==1.1.0
+beautifulsoup4==4.13.4
+jmespath==1.0.1
+line-bot-sdk==3.16.3

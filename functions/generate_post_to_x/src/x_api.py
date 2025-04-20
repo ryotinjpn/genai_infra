@@ -70,14 +70,14 @@ def log_x_rate_limit(headers):
     logger.warning(f"リセット時間（日本時間）: {formatted_time}")
 
 
-def create_x_to_posts(access_token: str, new_post: str):
+def create_x_to_posts(new_post: str):
     """ポスト投稿をする
 
     Args:
-        access_token (str): アクセストークン
         new_post (str): 投稿するポスト内容
     """
 
+    access_token = get_x_access_token()
     headers = {
         "Authorization": f"Bearer {access_token}",
         "Content-Type": "application/json",

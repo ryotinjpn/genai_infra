@@ -3,12 +3,12 @@
 # -------------------------------------
 variable "project_name" {
   type        = string
-  description = "Enter the project name."
+  description = "Enter the Project Name."
   nullable    = false
 }
 
 variable "environment" {
-  description = "Enter the environment."
+  description = "Enter the Environment."
   type        = string
   nullable    = false
   validation {
@@ -22,6 +22,6 @@ variable "environment" {
 # -------------------------------------
 variable "bedrock_region" {
   type        = string
-  description = "Enter the Bedrock region."
+  description = "Enter the Bedrock Region."
   nullable    = false
 }

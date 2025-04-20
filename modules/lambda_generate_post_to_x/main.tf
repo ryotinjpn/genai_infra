@@ -1,14 +1,4 @@
 # -------------------------------------
-# Lambda Layer
-# -------------------------------------
-resource "aws_lambda_layer_version" "main" {
-  filename            = local.lambda_functions_layer_path
-  layer_name          = "${var.project_name}-${var.environment}-lambda-layer"
-  compatible_runtimes = ["python3.13"]
-  source_code_hash    = filebase64sha256(local.lambda_functions_layer_path)
-}
-
-# -------------------------------------
 # Lambda Function
 # -------------------------------------
 resource "aws_lambda_function" "main" {
@@ -17,12 +7,12 @@ resource "aws_lambda_function" "main" {
   handler          = "lambda_handler.lambda_handler"
   memory_size      = 128
   timeout          = 900
-  runtime          = "python3.13"
+  runtime          = var.lambda_runtime_python
   role             = aws_iam_role.main.arn
   filename         = local.lambda_zip_path
   source_code_hash = data.archive_file.main.output_base64sha256
   layers = [
-    aws_lambda_layer_version.main.arn,
+    var.lambda_layer_arn,
     "arn:aws:lambda:ap-northeast-1:133490724326:layer:AWS-Parameters-and-Secrets-Lambda-Extension:11"
   ]
   environment {
@@ -72,7 +62,7 @@ resource "aws_cloudwatch_log_group" "main" {
 # IAM
 # -------------------------------------
 resource "aws_iam_role" "main" {
-  name               = "LambdaRoleForCreatePostToX-${var.project_name}-${var.environment}"
+  name               = "LambdaRoleForGeneratePostToX-${var.project_name}-${var.environment}"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
@@ -82,6 +72,6 @@ resource "aws_iam_role_policy_attachment" "main" {
 }
 
 resource "aws_iam_policy" "main" {
-  name   = "LambdaAccessForCreatePostToX-${var.project_name}-${var.environment}"
+  name   = "LambdaAccessForGeneratePostToX-${var.project_name}-${var.environment}"
   policy = data.aws_iam_policy_document.lambda_role.json
 }
