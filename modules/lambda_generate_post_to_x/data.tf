@@ -1,18 +1,18 @@
 data "aws_caller_identity" "self" {}
 data "aws_region" "current" {}
 
-# -------------------------------------
+#######################################
 # Lambda Function
-# -------------------------------------
+#######################################
 data "archive_file" "main" {
   type        = "zip"
   source_dir  = local.lambda_source_dir
   output_path = local.lambda_zip_path
 }
 
-# -------------------------------------
+#######################################
 # IAM
-# -------------------------------------
+#######################################
 data "aws_iam_policy_document" "lambda_assume_role" {
   version = "2012-10-17"
   statement {

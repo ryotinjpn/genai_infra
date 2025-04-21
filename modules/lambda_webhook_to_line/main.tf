@@ -1,6 +1,6 @@
-# -------------------------------------
+#######################################
 # Lambda Function
-# -------------------------------------
+#######################################
 resource "aws_lambda_function" "main" {
   function_name    = "${var.project_name}-${var.environment}-webhook-to-line"
   description      = "LINE API Webhookからイベントを受信する Lambda 関数"
@@ -32,17 +32,17 @@ resource "aws_lambda_function_url" "main" {
   authorization_type = "NONE"
 }
 
-# -------------------------------------
+#######################################
 # CloudWatch Logs
-# -------------------------------------
+#######################################
 resource "aws_cloudwatch_log_group" "main" {
   name              = "/aws/lambda/${aws_lambda_function.main.function_name}"
   retention_in_days = 30
 }
 
-# -------------------------------------
+#######################################
 # IAM
-# -------------------------------------
+#######################################
 resource "aws_iam_role" "main" {
   name               = "LambdaRoleForWebhookToLine-${var.project_name}-${var.environment}"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json

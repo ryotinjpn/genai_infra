@@ -1,6 +1,6 @@
-# -------------------------------------
+#######################################
 # Lambda Function
-# -------------------------------------
+#######################################
 resource "aws_lambda_function" "main" {
   function_name    = "${var.project_name}-${var.environment}-generate-post-to-x"
   description      = "Xの投稿内容を自動生成し投稿する Lambda 関数"
@@ -26,9 +26,9 @@ resource "aws_lambda_function" "main" {
   }
 }
 
-# -------------------------------------
+#######################################
 # Lambda Permission
-# -------------------------------------
+#######################################
 resource "aws_lambda_permission" "main" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.main.function_name
@@ -36,9 +36,9 @@ resource "aws_lambda_permission" "main" {
   source_arn    = aws_cloudwatch_event_rule.main.arn
 }
 
-# -------------------------------------
+#######################################
 # EventBridge
-# -------------------------------------
+#######################################
 resource "aws_cloudwatch_event_rule" "main" {
   name                = "notice-generate-post-to-x-jst-1100"
   description         = "11:00 の時間検知 Event をトリガーに Lambda function (${aws_lambda_function.main.function_name}) を起動"
@@ -50,17 +50,17 @@ resource "aws_cloudwatch_event_target" "main" {
   arn  = aws_lambda_function.main.arn
 }
 
-# -------------------------------------
+#######################################
 # CloudWatch Logs
-# -------------------------------------
+#######################################
 resource "aws_cloudwatch_log_group" "main" {
   name              = "/aws/lambda/${aws_lambda_function.main.function_name}"
   retention_in_days = 30
 }
 
-# -------------------------------------
+#######################################
 # IAM
-# -------------------------------------
+#######################################
 resource "aws_iam_role" "main" {
   name               = "LambdaRoleForGeneratePostToX-${var.project_name}-${var.environment}"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
