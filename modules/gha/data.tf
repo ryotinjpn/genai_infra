@@ -1,9 +1,9 @@
 data "aws_caller_identity" "self" {}
 data "aws_region" "current" {}
 
-# -------------------------------------
+#######################################
 # IAM
-# -------------------------------------
+#######################################
 data "aws_iam_policy_document" "assume_role" {
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]

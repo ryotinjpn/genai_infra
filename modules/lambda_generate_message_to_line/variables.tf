@@ -1,6 +1,6 @@
-# -------------------------------------
+#######################################
 # Common
-# -------------------------------------
+#######################################
 variable "project_name" {
   type        = string
   description = "Enter the Project Name."
@@ -17,9 +17,9 @@ variable "environment" {
   }
 }
 
-# -------------------------------------
+#######################################
 # Lambda
-# -------------------------------------
+#######################################
 variable "bedrock_region" {
   type        = string
   description = "Enter the Bedrock Region."
@@ -41,5 +41,11 @@ variable "lambda_runtime_python" {
 variable "lambda_layer_arn" {
   type        = string
   description = "Enter the Lambda Layer Arn."
+  nullable    = false
+}
+
+variable "sns_topic_arn" {
+  type        = string
+  description = "Enter the SNS Topic Arn."
   nullable    = false
 }

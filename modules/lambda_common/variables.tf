@@ -1,6 +1,6 @@
-# -------------------------------------
+#######################################
 # Common
-# -------------------------------------
+#######################################
 variable "project_name" {
   type        = string
   description = "Enter the Project Name."
@@ -17,9 +17,9 @@ variable "environment" {
   }
 }
 
-# -------------------------------------
+#######################################
 # Lambda
-# -------------------------------------
+#######################################
 variable "lambda_runtime_python" {
   type        = string
   description = "Enter the Lambda Runtime Python."

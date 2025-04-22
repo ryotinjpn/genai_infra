@@ -1,8 +1,10 @@
 import json
 import logging
 import os
+import traceback
 
 import bedrock
+import boto3
 import ssm
 from linebot import LineBotApi
 from linebot.models import TextSendMessage
@@ -11,6 +13,9 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 IS_UPDATE_SSM_PARAMETER = bool(int(os.environ["IS_UPDATE_SSM_PARAMETER"]))
+
+sns = boto3.client("sns")
+sns_topic_arn = os.environ["SNS_TOPIC_ARN"]
 
 
 def lambda_handler(event, _):
@@ -49,7 +54,7 @@ def lambda_handler(event, _):
                     os.environ.get("LINE_API_CHANNEL_ACCESS_TOKEN")
                 )
                 line_bot_api = LineBotApi(channel_access_token)
-                
+
                 reply_message = bedrock.generate_reply_message(
                     events["message"]["text"]
                 )
@@ -60,4 +65,9 @@ def lambda_handler(event, _):
                 logger.info("メンション返信完了")
         return {"status_code": 200, "message": "処理成功"}
     except Exception as e:
+        sns.publish(
+            TopicArn=sns_topic_arn,
+            Subject="【ALERT】lambda_webhook_to_line エラー",
+            Message=f"\n{str(e)}\n\n{traceback.format_exc()}",
+        )
         return {"status_code": 500, "message": "処理失敗", "error": str(e)}
