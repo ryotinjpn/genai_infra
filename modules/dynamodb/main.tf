@@ -1,6 +1,6 @@
-# -------------------------------------
+#######################################
 # DynamoDB
-# -------------------------------------
+#######################################
 resource "aws_dynamodb_table" "generate_post_to_x" {
   name         = "GeneratePostToXHistory"
   billing_mode = "PAY_PER_REQUEST"
