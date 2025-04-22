@@ -44,6 +44,12 @@ variable "lambda_layer_arn" {
   nullable    = false
 }
 
+variable "sns_topic_arn" {
+  type        = string
+  description = "Enter the SNS Topic Arn."
+  nullable    = false
+}
+
 variable "dynamodb_table_name" {
   type        = string
   description = "Enter the DynamoDB Table Name."

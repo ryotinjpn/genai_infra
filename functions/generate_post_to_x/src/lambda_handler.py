@@ -1,8 +1,14 @@
+import os
+import traceback
+
 import bedrock
+import boto3
 import dynamodb
 import x_api
 
 dynamodb_resource = dynamodb.DynamoDBResource()
+sns = boto3.client("sns")
+sns_topic_arn = os.environ["SNS_TOPIC_ARN"]
 
 
 def lambda_handler(event, _):
@@ -16,4 +22,9 @@ def lambda_handler(event, _):
 
         return {"status_code": 200, "message": "処理成功"}
     except Exception as e:
+        sns.publish(
+            TopicArn=sns_topic_arn,
+            Subject="【ALERT】lambda_generate_post_to_x エラー",
+            Message=f"\n{str(e)}\n\n{traceback.format_exc()}",
+        )
         return {"status_code": 500, "message": "処理失敗", "error": str(e)}

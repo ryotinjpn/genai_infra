@@ -22,6 +22,7 @@ resource "aws_lambda_function" "main" {
       X_API_CLIENT_ID     = "/${var.project_name}/${var.environment}/X_API_CLIENT_ID"
       X_API_CLIENT_SECRET = "/${var.project_name}/${var.environment}/X_API_CLIENT_SECRET"
       X_API_REFRESH_TOKEN = "/${var.project_name}/${var.environment}/X_API_REFRESH_TOKEN"
+      SNS_TOPIC_ARN       = var.sns_topic_arn
     }
   }
 }

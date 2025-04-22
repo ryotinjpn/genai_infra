@@ -22,6 +22,7 @@ resource "aws_lambda_function" "main" {
       BRAVE_API_KEY                 = "/${var.project_name}/${var.environment}/BRAVE_API_KEY"
       LINE_API_CHANNEL_ACCESS_TOKEN = "/${var.project_name}/${var.environment}/LINE_API_CHANNEL_ACCESS_TOKEN"
       LINE_API_TARGET_ID            = "/${var.project_name}/${var.environment}/LINE_API_TARGET_ID"
+      SNS_TOPIC_ARN                 = var.sns_topic_arn
     }
   }
 }
