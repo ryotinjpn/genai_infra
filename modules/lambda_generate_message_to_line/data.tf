@@ -57,6 +57,13 @@ data "aws_iam_policy_document" "lambda_role" {
   statement {
     effect = "Allow"
     actions = [
+      "sns:Publish",
+    ]
+    resources = [var.sns_topic_arn]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
       "bedrock:InvokeModel",
     ]
     resources = [
