@@ -43,3 +43,9 @@ variable "lambda_layer_arn" {
   description = "Enter the Lambda Layer Arn."
   nullable    = false
 }
+
+variable "sns_topic_arn" {
+  type        = string
+  description = "Enter the SNS Topic Arn."
+  nullable    = false
+}

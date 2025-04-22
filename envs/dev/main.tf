@@ -1,5 +1,5 @@
-module "lambda_layer" {
-  source = "../../modules/lambda_layer"
+module "lambda_common" {
+  source = "../../modules/lambda_common"
 
   project_name = local.project_name
   environment  = local.environment
@@ -16,7 +16,8 @@ module "lambda_generate_post_to_x" {
   bedrock_region        = local.bedrock_region
   model_id              = local.model_id
   lambda_runtime_python = local.lambda_runtime_python
-  lambda_layer_arn      = module.lambda_layer.lambda_layer_arn
+  lambda_layer_arn      = module.lambda_common.lambda_layer_arn
+  sns_topic_arn         = module.lambda_common.sns_topic_arn
   dynamodb_table_name   = module.dynamodb.generate_post_to_x_name
 }
 
@@ -29,7 +30,8 @@ module "lambda_generate_message_to_line" {
   bedrock_region        = local.bedrock_region
   model_id              = local.model_id
   lambda_runtime_python = local.lambda_runtime_python
-  lambda_layer_arn      = module.lambda_layer.lambda_layer_arn
+  lambda_layer_arn      = module.lambda_common.lambda_layer_arn
+  sns_topic_arn         = module.lambda_common.sns_topic_arn
 }
 
 module "lambda_webhook_to_line" {
@@ -41,7 +43,8 @@ module "lambda_webhook_to_line" {
   bedrock_region        = local.bedrock_region
   model_id              = local.model_id
   lambda_runtime_python = local.lambda_runtime_python
-  lambda_layer_arn      = module.lambda_layer.lambda_layer_arn
+  lambda_layer_arn      = module.lambda_common.lambda_layer_arn
+  sns_topic_arn         = module.lambda_common.sns_topic_arn
 }
 
 module "dynamodb" {
