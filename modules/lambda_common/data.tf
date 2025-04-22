@@ -10,7 +10,7 @@ data "aws_iam_policy_document" "sns_kms_key" {
     effect = "Allow"
     principals {
       type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.self.id}:root"]
     }
     actions   = ["kms:*"]
     resources = ["*"]

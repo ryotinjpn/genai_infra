@@ -16,8 +16,8 @@ resource "aws_sns_topic" "main" {
   kms_master_key_id = aws_kms_key.sns.arn
 }
 
-resource "aws_sns_topic_subscription" "email_alert" {
-  topic_arn = aws_sns_topic.lambda_alerts.arn
+resource "aws_sns_topic_subscription" "main" {
+  topic_arn = aws_sns_topic.main.arn
   protocol  = "email"
   endpoint  = "ryotinjpn@gmail.com"
 }
