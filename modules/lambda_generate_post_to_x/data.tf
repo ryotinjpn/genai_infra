@@ -41,7 +41,9 @@ data "aws_iam_policy_document" "lambda_role" {
   statement {
     effect = "Allow"
     actions = [
-      "kms:Decrypt"
+      "kms:Decrypt",
+      "kms:Encrypt",
+      "kms:GenerateDataKey",
     ]
     resources = [
       "arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.self.id}:key/*"
