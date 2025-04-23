@@ -3,49 +3,32 @@
 #######################################
 # AMAZON.UserInputの設定が必要な為、awsccを使用
 resource "awscc_bedrock_agent" "main" {
-  agent_name                  = "bedrock_agent"
+  agent_name                  = "search-agent-${var.project_name}-${var.environment}"
   agent_resource_role_arn     = aws_iam_role.main.arn
   foundation_model            = "anthropic.claude-3-haiku-20240307-v1:0"
   idle_session_ttl_in_seconds = 600
   auto_prepare                = true
-  instruction                 = local.prompt
+  instruction                 = local.instruction_prompt
 
   action_groups = [
     {
-      action_group_name = "BedrockAgentAPIAction"
+      action_group_name = "Search"
       action_group_executor = {
         lambda = var.lambda_function_arn
       }
       function_schema = {
         functions = [
           {
-            name        = "get_available_vacations_days"
-            description = "get the number of vacations available for a certain employee"
-            parameters = {
-              employee_id = {
-                type        = "integer"
-                description = "the id of the employee to get the available vacations"
-                required    = true
-              }
-            }
+            name        = "search_news"
+            description = local.search_news_description
           },
           {
-            name        = "reserve_vacation_time"
-            description = "reserve vacation time for a specific employee - you need all parameters to reserve vacation time"
+            name        = "search_web"
+            description = local.search_web_description
             parameters = {
-              employee_id = {
-                type        = "integer"
-                description = "the id of the employee"
-                required    = true
-              }
-              start_date = {
+              keyword = {
                 type        = "string"
-                description = "the start date for the vacation"
-                required    = true
-              }
-              end_date = {
-                type        = "string"
-                description = "the end date for the vacation"
+                description = "検索キーワード"
                 required    = true
               }
             }
@@ -54,7 +37,7 @@ resource "awscc_bedrock_agent" "main" {
       }
     },
     {
-      action_group_name             = "UserInputAction"
+      action_group_name             = "UserInput"
       parent_action_group_signature = "AMAZON.UserInput"
     }
   ]

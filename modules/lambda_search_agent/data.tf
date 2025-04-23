@@ -32,10 +32,10 @@ data "aws_iam_policy_document" "lambda_role" {
     actions = [
       "ssm:GetParameter",
       "ssm:GetParameters",
-      "ssm:PutParameter",
     ]
     resources = [
       "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.self.id}:parameter/*",
+      "arn:aws:ssm:ap-northeast-1:${data.aws_caller_identity.self.id}:parameter/*",
     ]
   }
   statement {
@@ -46,7 +46,8 @@ data "aws_iam_policy_document" "lambda_role" {
       "kms:GenerateDataKey",
     ]
     resources = [
-      "arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.self.id}:key/*"
+      "arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.self.id}:key/*",
+      "arn:aws:kms:ap-northeast-1:${data.aws_caller_identity.self.id}:key/*"
     ]
   }
   statement {
@@ -63,15 +64,5 @@ data "aws_iam_policy_document" "lambda_role" {
       "sns:Publish",
     ]
     resources = [var.sns_topic_arn]
-  }
-  statement {
-    effect = "Allow"
-    actions = [
-      "bedrock:InvokeModel",
-    ]
-    resources = [
-      "arn:aws:bedrock:*::foundation-model/anthropic.*",
-      "arn:aws:bedrock:${data.aws_region.current.name}:${data.aws_caller_identity.self.id}:inference-profile/*"
-    ]
   }
 }

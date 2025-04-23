@@ -1,5 +1,5 @@
-module "bedrock" {
-  source = "../../modules/bedrock"
+module "bedrock_search_agent" {
+  source = "../../modules/bedrock_search_agent"
 
   providers = {
     aws   = aws.virginia
@@ -9,7 +9,7 @@ module "bedrock" {
   project_name = local.project_name
   environment  = local.environment
 
-  lambda_function_arn = module.lambda_bedrock_agent.lambda_function_arn
+  lambda_function_arn = module.lambda_search_agent.lambda_function_arn
 }
 
 module "lambda_common_virginia" {
@@ -25,8 +25,8 @@ module "lambda_common_virginia" {
   lambda_runtime_python = local.lambda_runtime_python
 }
 
-module "lambda_bedrock_agent" {
-  source = "../../modules/lambda_bedrock_agent"
+module "lambda_search_agent" {
+  source = "../../modules/lambda_search_agent"
 
   providers = {
     aws = aws.virginia
@@ -35,8 +35,6 @@ module "lambda_bedrock_agent" {
   project_name = local.project_name
   environment  = local.environment
 
-  bedrock_region        = local.bedrock_region
-  model_id              = local.model_id
   lambda_runtime_python = local.lambda_runtime_python
   lambda_layer_arn      = module.lambda_common_virginia.lambda_layer_arn
   sns_topic_arn         = module.lambda_common_virginia.sns_topic_arn

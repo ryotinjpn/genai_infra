@@ -2,8 +2,8 @@
 # Lambda Function
 #######################################
 resource "aws_lambda_function" "main" {
-  function_name    = "${var.project_name}-${var.environment}-bedrock-agent"
-  description      = "Bedrock Agentで起動する Lambda 関数"
+  function_name    = "${var.project_name}-${var.environment}-search-agent"
+  description      = "Search Agentの アクショングループで起動する Lambda 関数"
   handler          = "lambda_handler.lambda_handler"
   memory_size      = 128
   timeout          = 900
@@ -17,7 +17,7 @@ resource "aws_lambda_function" "main" {
   environment {
     variables = {
       TZ            = "Asia/Tokyo"
-      MODEL_ID      = var.model_id
+      BRAVE_API_KEY = "/${var.project_name}/${var.environment}/BRAVE_API_KEY"
       SNS_TOPIC_ARN = var.sns_topic_arn
     }
   }
