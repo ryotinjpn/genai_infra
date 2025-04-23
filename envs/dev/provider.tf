@@ -20,3 +20,8 @@ provider "aws" {
     }
   }
 }
+
+provider "awscc" {
+  region = "us-east-1"
+  alias  = "virginia"
+}

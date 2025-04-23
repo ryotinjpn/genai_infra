@@ -1,3 +1,47 @@
+module "bedrock" {
+  source = "../../modules/bedrock"
+
+  providers = {
+    aws   = aws.virginia
+    awscc = awscc.virginia
+  }
+
+  project_name = local.project_name
+  environment  = local.environment
+
+  lambda_function_arn = module.lambda_bedrock_agent.lambda_function_arn
+}
+
+module "lambda_common_virginia" {
+  source = "../../modules/lambda_common"
+
+  providers = {
+    aws = aws.virginia
+  }
+
+  project_name = local.project_name
+  environment  = local.environment
+
+  lambda_runtime_python = local.lambda_runtime_python
+}
+
+module "lambda_bedrock_agent" {
+  source = "../../modules/lambda_bedrock_agent"
+
+  providers = {
+    aws = aws.virginia
+  }
+
+  project_name = local.project_name
+  environment  = local.environment
+
+  bedrock_region        = local.bedrock_region
+  model_id              = local.model_id
+  lambda_runtime_python = local.lambda_runtime_python
+  lambda_layer_arn      = module.lambda_common_virginia.lambda_layer_arn
+  sns_topic_arn         = module.lambda_common_virginia.sns_topic_arn
+}
+
 module "lambda_common" {
   source = "../../modules/lambda_common"
 
