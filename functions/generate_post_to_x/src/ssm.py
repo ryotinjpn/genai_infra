@@ -50,5 +50,4 @@ def update_ssm_parameter(new_refresh_token: str):
         )
         logger.info("SSMパラメータ更新完了")
     except Exception as e:
-        logger.exception(f"SSMパラメータ更新エラー: {e}")
-        raise
+        raise Exception(f"SSMパラメータ更新エラー: {e}")

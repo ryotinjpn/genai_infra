@@ -43,5 +43,4 @@ def search_brave(brave_api_key: str, keyword: str):
         results = cleaned_html(response.json())
         return results
     except Exception as e:
-        logger.exception(f"検索エラー: {e}")
-        raise
+        raise Exception(f"検索エラー: {e}")

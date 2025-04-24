@@ -27,5 +27,4 @@ def search_google_news_business():
 
         return result
     except Exception as e:
-        logger.exception(f"ビジネス情報取得エラー: {e}")
-        raise
+        raise Exception(f"ビジネス情報取得エラー: {e}")

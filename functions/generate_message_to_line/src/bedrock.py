@@ -110,5 +110,4 @@ def generate_messages(text: str):
 
         return generate_post
     except Exception as e:
-        logger.exception(f"メッセージ内容生成エラー: {e}")
-        raise
+        raise Exception(f"メッセージ内容生成エラー: {e}")

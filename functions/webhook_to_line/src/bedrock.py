@@ -63,5 +63,4 @@ def generate_reply_message(text: str):
 
         return generate_reply_message
     except Exception as e:
-        logger.exception(f"回答内容生成エラー: {e}")
-        raise
+        raise Exception(f"回答内容生成エラー: {e}")

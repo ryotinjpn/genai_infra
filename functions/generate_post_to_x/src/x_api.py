@@ -46,8 +46,7 @@ def get_x_access_token():
         logger.info("アクセストークン取得完了")
         return access_token
     except Exception as e:
-        logger.exception(f"アクセストークン取得エラー: {e}")
-        raise
+        raise Exception(f"アクセストークン取得エラー: {e}")
 
 
 def log_x_rate_limit(headers):
@@ -94,5 +93,4 @@ def create_x_to_posts(new_post: str):
     except Exception as e:
         if response.status_code == 429:
             log_x_rate_limit(response.headers)
-        logger.exception(f"ポスト投稿エラー: {e}")
-        raise
+        raise Exception(f"ポスト投稿エラー: {e}")
