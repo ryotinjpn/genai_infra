@@ -43,9 +43,12 @@ def lambda_handler(event, _):
             case "search_web":
                 parameters = event.get("parameters", [])
                 keyword = get_keyword(parameters)
-                results = brave_api.search_brave(keyword)
-                cleaned_html = transformer.cleaned_html(results)
-                response_text = bedrock.generate_summary(keyword, cleaned_html)
+                if not keyword:
+                    response_text = "検索キーワードが指定されていません"
+                else:
+                    results = brave_api.search_brave(keyword)
+                    cleaned_html = transformer.cleaned_html(results)
+                    response_text = bedrock.generate_summary(keyword, cleaned_html)
             case _:
                 response_text = "Error No function was called"
                 logger.warning("関数未呼び出し")
