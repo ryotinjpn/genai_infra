@@ -41,7 +41,7 @@ resource "aws_lambda_permission" "main" {
 # EventBridge
 #######################################
 resource "aws_cloudwatch_event_rule" "main" {
-  name                = "notice-generate-post-to-x-jst-1100"
+  name                = "notice-generate-post-to-x-jst-11-am"
   description         = "11:00 の時間検知 Event をトリガーに Lambda function (${aws_lambda_function.main.function_name}) を起動"
   schedule_expression = "cron(0 2 * * ? *)"
 }
