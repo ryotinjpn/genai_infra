@@ -37,7 +37,8 @@ resource "awscc_bedrock_agent" "main" {
       }
     },
     {
-      action_group_name             = "UserInput"
+      # ユーザー入力を有効にする為に、UserInputActionは固定値必須
+      action_group_name             = "UserInputAction"
       parent_action_group_signature = "AMAZON.UserInput"
     }
   ]
