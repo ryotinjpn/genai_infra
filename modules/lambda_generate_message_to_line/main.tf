@@ -44,6 +44,7 @@ resource "aws_cloudwatch_event_rule" "main" {
   name                = "notice-generate-message-to-line-jst-7-am"
   description         = "AM7:00 の時間検知 Event をトリガーに Lambda function (${aws_lambda_function.main.function_name}) を起動"
   schedule_expression = "cron(0 22 * * ? *)"
+  state               = "DISABLED"
 }
 
 resource "aws_cloudwatch_event_target" "main" {
