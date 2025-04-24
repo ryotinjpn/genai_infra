@@ -28,7 +28,7 @@ def get_parameter_store_value(parameter_path: str):
     except Exception as e:
         sns_client.publish(
             TopicArn=sns_topic_arn,
-            Subject="【ALERT】lambda_search_agent エラー",
+            Subject="【ALERT】lambda_webhook_to_line エラー",
             Message=f"\n{str(e)}\n\n{traceback.format_exc()}",
         )
         raise Exception(f"パラメータストア取得エラー: {e}")
