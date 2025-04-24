@@ -11,7 +11,7 @@ import transformer
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-sns = boto3.client("sns")
+sns_client = boto3.client("sns")
 sns_topic_arn = os.environ["SNS_TOPIC_ARN"]
 
 
@@ -26,13 +26,10 @@ def get_keyword(parameters):
     """
 
     return next(
-        (
-            param.get("value")
-            for param in parameters
-            if param.get("name") == "keyword"
-        ),
+        (param.get("value") for param in parameters if param.get("name") == "keyword"),
         None,
     )
+
 
 def lambda_handler(event, _):
     """Lambdaエントリーポイント"""
@@ -56,7 +53,7 @@ def lambda_handler(event, _):
         response_text = "Error"
         error_message = f"\n{str(e)}\n\n{traceback.format_exc()}"
         logger.error(error_message)
-        sns.publish(
+        sns_client.publish(
             TopicArn=sns_topic_arn,
             Subject="【ALERT】lambda_search_agent エラー",
             Message=error_message,
