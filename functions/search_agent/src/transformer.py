@@ -1,7 +1,6 @@
 import logging
 import xml.etree.ElementTree as ET
 
-import bedrock
 import jmespath
 import requests
 from bs4 import BeautifulSoup
