@@ -65,4 +65,14 @@ data "aws_iam_policy_document" "lambda_role" {
     ]
     resources = [var.sns_topic_arn]
   }
+  statement {
+    effect = "Allow"
+    actions = [
+      "bedrock:InvokeModel",
+    ]
+    resources = [
+      "arn:aws:bedrock:*::foundation-model/anthropic.*",
+      "arn:aws:bedrock:${data.aws_region.current.name}:${data.aws_caller_identity.self.id}:inference-profile/*"
+    ]
+  }
 }

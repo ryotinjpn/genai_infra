@@ -35,6 +35,7 @@ module "lambda_search_agent" {
   project_name = local.project_name
   environment  = local.environment
 
+  model_id              = local.model_id
   lambda_runtime_python = local.lambda_runtime_python
   lambda_layer_arn      = module.lambda_common_virginia.lambda_layer_arn
   sns_topic_arn         = module.lambda_common_virginia.sns_topic_arn

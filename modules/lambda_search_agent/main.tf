@@ -17,6 +17,7 @@ resource "aws_lambda_function" "main" {
   environment {
     variables = {
       TZ            = "Asia/Tokyo"
+      MODEL_ID      = var.model_id
       BRAVE_API_KEY = "/${var.project_name}/${var.environment}/BRAVE_API_KEY"
       SNS_TOPIC_ARN = var.sns_topic_arn
     }
