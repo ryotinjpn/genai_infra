@@ -1,7 +1,7 @@
 import logging
 
 import requests
-from transformer import parse_google_news
+import transformer
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -23,9 +23,8 @@ def search_google_news_business():
         response.raise_for_status()
         logger.info("ビジネス情報取得完了")
 
-        result = parse_google_news(response.content)
+        result = transformer.parse_google_news(response.content)
 
         return result
     except Exception as e:
-        logger.exception(f"ビジネス情報取得エラー: {e}")
-        raise
+        raise Exception(f"ビジネス情報取得エラー: {e}")

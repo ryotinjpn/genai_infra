@@ -1,7 +1,7 @@
 import logging
 
 import requests
-from transformer import cleaned_html
+import transformer
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -40,8 +40,7 @@ def search_brave(brave_api_key: str, keyword: str):
         response.raise_for_status()
         logger.info("検索完了")
 
-        results = cleaned_html(response.json())
+        results = transformer.cleaned_html(response.json())
         return results
     except Exception as e:
-        logger.exception(f"検索エラー: {e}")
-        raise
+        raise Exception(f"検索エラー: {e}")

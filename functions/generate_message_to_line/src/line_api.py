@@ -33,5 +33,4 @@ def push_line_to_messages(messages: str):
 
         logger.info("プッシュメッセージ送信完了")
     except Exception as e:
-        logger.exception(f"プッシュメッセージ送信エラー: {e}")
-        raise
+        raise Exception(f"プッシュメッセージ送信エラー: {e}")

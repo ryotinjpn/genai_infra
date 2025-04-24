@@ -29,8 +29,7 @@ class DynamoDBResource:
             logger.info(post_histories)
             return post_histories
         except Exception as e:
-            logger.exception(f"DynamoDBポスト投稿履歴取得エラー: {e}")
-            raise
+            raise Exception(f"DynamoDBポスト投稿履歴取得エラー: {e}")
 
     def put_post_history(self, post: str):
         """DynamoDBへポスト投稿内容保存
@@ -51,5 +50,4 @@ class DynamoDBResource:
             )
             logger.info("DynamoDBポスト投稿内容保存完了")
         except Exception as e:
-            logger.exception(f"DynamoDBポスト投稿内容保存エラー: {e}")
-            raise
+            raise Exception(f"DynamoDBポスト投稿内容保存エラー: {e}")

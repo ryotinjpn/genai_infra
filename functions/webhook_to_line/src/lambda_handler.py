@@ -14,7 +14,7 @@ logger.setLevel(logging.INFO)
 
 IS_UPDATE_SSM_PARAMETER = bool(int(os.environ["IS_UPDATE_SSM_PARAMETER"]))
 
-sns = boto3.client("sns")
+sns_client = boto3.client("sns")
 sns_topic_arn = os.environ["SNS_TOPIC_ARN"]
 
 
@@ -65,7 +65,7 @@ def lambda_handler(event, _):
                 logger.info("メンション返信完了")
         return {"status_code": 200, "message": "処理成功"}
     except Exception as e:
-        sns.publish(
+        sns_client.publish(
             TopicArn=sns_topic_arn,
             Subject="【ALERT】lambda_webhook_to_line エラー",
             Message=f"\n{str(e)}\n\n{traceback.format_exc()}",

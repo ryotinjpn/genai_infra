@@ -70,5 +70,4 @@ def generate_post(post_history: str):
 
         return generate_post
     except Exception as e:
-        logger.exception(f"ポスト投稿内容生成エラー: {e}")
-        raise
+        raise Exception(f"ポスト投稿内容生成エラー: {e}")

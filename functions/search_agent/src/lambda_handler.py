@@ -11,7 +11,7 @@ import transformer
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-sns = boto3.client("sns")
+sns_client = boto3.client("sns")
 sns_topic_arn = os.environ["SNS_TOPIC_ARN"]
 
 
@@ -26,13 +26,10 @@ def get_keyword(parameters):
     """
 
     return next(
-        (
-            param.get("value")
-            for param in parameters
-            if param.get("name") == "keyword"
-        ),
+        (param.get("value") for param in parameters if param.get("name") == "keyword"),
         None,
     )
+
 
 def lambda_handler(event, _):
     """Lambdaエントリーポイント"""
@@ -46,9 +43,12 @@ def lambda_handler(event, _):
             case "search_web":
                 parameters = event.get("parameters", [])
                 keyword = get_keyword(parameters)
-                results = brave_api.search_brave(keyword)
-                cleaned_html = transformer.cleaned_html(results)
-                response_text = bedrock.generate_summary(keyword, cleaned_html)
+                if not keyword:
+                    response_text = "検索キーワードが指定されていません"
+                else:
+                    results = brave_api.search_brave(keyword)
+                    cleaned_html = transformer.cleaned_html(results)
+                    response_text = bedrock.generate_summary(keyword, cleaned_html)
             case _:
                 response_text = "Error No function was called"
                 logger.warning("関数未呼び出し")
@@ -56,7 +56,7 @@ def lambda_handler(event, _):
         response_text = "Error"
         error_message = f"\n{str(e)}\n\n{traceback.format_exc()}"
         logger.error(error_message)
-        sns.publish(
+        sns_client.publish(
             TopicArn=sns_topic_arn,
             Subject="【ALERT】lambda_search_agent エラー",
             Message=error_message,
