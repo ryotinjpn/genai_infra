@@ -14,6 +14,10 @@ logger.setLevel(logging.INFO)
 
 IS_UPDATE_SSM_PARAMETER = bool(int(os.environ["IS_UPDATE_SSM_PARAMETER"]))
 
+channel_access_token = ssm.get_parameter_store_value(
+    os.environ.get("LINE_API_CHANNEL_ACCESS_TOKEN")
+)
+
 sns_client = boto3.client("sns")
 sns_topic_arn = os.environ["SNS_TOPIC_ARN"]
 
@@ -39,30 +43,26 @@ def lambda_handler(event, _):
         if IS_UPDATE_SSM_PARAMETER:
             ssm.update_ssm_parameter(target_id)
 
-        if events["type"] == "message" and events["message"]["type"] == "text":
-            logger.info("メッセージ受信")
-            mention = events["message"].get("mention", {})
+        if events["type"] != "message" or events["message"]["type"] != "text":
+            logger.info("テキストメッセージではない")
+            return {"status_code": 200, "message": "非テキストメッセージ"}
 
-            if not mention:
-                logger.info("メンションなし")
-                return {"status_code": 200, "message": "処理成功"}
+        mention = events["message"].get("mention", {})
+        if not mention:
+            logger.info("メンションなし")
+            return {"status_code": 200, "message": "メンションなし"}
 
-            is_mentioned = any(m.get("isSelf") for m in mention["mentionees"])
-            if is_mentioned:
-                logger.info("メンション受信")
-                channel_access_token = ssm.get_parameter_store_value(
-                    os.environ.get("LINE_API_CHANNEL_ACCESS_TOKEN")
-                )
-                line_bot_api = LineBotApi(channel_access_token)
+        is_mentioned = any(m.get("isSelf") for m in mention["mentionees"])
+        if is_mentioned:
+            logger.info("メンション受信")
+            line_bot_api = LineBotApi(channel_access_token)
 
-                reply_message = bedrock.generate_reply_message(
-                    events["message"]["text"]
-                )
-                logger.info("回答内容生成完了")
-                line_bot_api.reply_message(
-                    events["replyToken"], TextSendMessage(text=reply_message)
-                )
-                logger.info("メンション返信完了")
+            reply_message = bedrock.generate_reply_message(events["message"]["text"])
+            logger.info("回答内容生成完了")
+            line_bot_api.reply_message(
+                events["replyToken"], TextSendMessage(text=reply_message)
+            )
+            logger.info("メンション返信完了")
         return {"status_code": 200, "message": "処理成功"}
     except Exception as e:
         sns_client.publish(
