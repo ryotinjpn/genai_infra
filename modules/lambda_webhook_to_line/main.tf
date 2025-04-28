@@ -22,6 +22,8 @@ resource "aws_lambda_function" "main" {
       LINE_API_CHANNEL_ACCESS_TOKEN = "/${var.project_name}/${var.environment}/LINE_API_CHANNEL_ACCESS_TOKEN"
       LINE_API_CHANNEL_USER_ID      = "/${var.project_name}/${var.environment}/LINE_API_CHANNEL_USER_ID"
       LINE_API_TARGET_ID            = "/${var.project_name}/${var.environment}/LINE_API_TARGET_ID"
+      BEDROCK_AGENT_ID              = var.bedrock_agent_id
+      BEDROCK_AGENT_ALIAS_ID        = var.bedrock_agent_alias_id
       SNS_TOPIC_ARN                 = var.sns_topic_arn
       IS_UPDATE_SSM_PARAMETER       = 0
     }

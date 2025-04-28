@@ -49,3 +49,15 @@ variable "sns_topic_arn" {
   description = "Enter the SNS Topic Arn."
   nullable    = false
 }
+
+variable "bedrock_agent_id" {
+  type        = string
+  description = "Enter the Bedrock Agent ID."
+  nullable    = false
+}
+
+variable "bedrock_agent_alias_id" {
+  type        = string
+  description = "Enter the Bedrock Agent Alias ID."
+  nullable    = false
+}

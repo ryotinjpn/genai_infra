@@ -74,4 +74,14 @@ data "aws_iam_policy_document" "lambda_role" {
       "arn:aws:bedrock:${var.bedrock_region}:${data.aws_caller_identity.self.id}:inference-profile/*"
     ]
   }
+  statement {
+    effect = "Allow"
+    actions = [
+      "bedrock:GetAgentAlias",
+      "bedrock:InvokeAgent"
+    ]
+    resources = [
+      "arn:aws:bedrock:${var.bedrock_region}:${data.aws_caller_identity.self.id}:agent-alias/*"
+    ]
+  }
 }
