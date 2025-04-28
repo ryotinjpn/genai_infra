@@ -20,6 +20,12 @@ variable "environment" {
 #######################################
 # Lambda
 #######################################
+variable "bedrock_region" {
+  type        = string
+  description = "Enter the Bedrock Region."
+  nullable    = false
+}
+
 variable "lambda_runtime_python" {
   type        = string
   description = "Enter the Lambda Runtime Python."
@@ -35,5 +41,17 @@ variable "lambda_layer_arn" {
 variable "sns_topic_arn" {
   type        = string
   description = "Enter the SNS Topic Arn."
+  nullable    = false
+}
+
+variable "bedrock_agent_id" {
+  type        = string
+  description = "Enter the Bedrock Agent ID."
+  nullable    = false
+}
+
+variable "bedrock_agent_alias_id" {
+  type        = string
+  description = "Enter the Bedrock Agent Alias ID."
   nullable    = false
 }

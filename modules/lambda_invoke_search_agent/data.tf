@@ -67,16 +67,6 @@ data "aws_iam_policy_document" "lambda_role" {
   statement {
     effect = "Allow"
     actions = [
-      "bedrock:InvokeModel",
-    ]
-    resources = [
-      "arn:aws:bedrock:*::foundation-model/anthropic.*",
-      "arn:aws:bedrock:${var.bedrock_region}:${data.aws_caller_identity.self.id}:inference-profile/*"
-    ]
-  }
-  statement {
-    effect = "Allow"
-    actions = [
       "bedrock:GetAgentAlias",
       "bedrock:InvokeAgent"
     ]
