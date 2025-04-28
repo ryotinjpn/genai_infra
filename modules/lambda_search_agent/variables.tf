@@ -20,12 +20,6 @@ variable "environment" {
 #######################################
 # Lambda
 #######################################
-variable "model_id" {
-  type        = string
-  description = "Enter the Model ID."
-  nullable    = false
-}
-
 variable "lambda_runtime_python" {
   type        = string
   description = "Enter the Lambda Runtime Python."

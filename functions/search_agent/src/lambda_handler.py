@@ -71,6 +71,8 @@ def lambda_handler(event, _):
     action_response = {
         "messageVersion": "1.0",
         "response": function_response,
+        "sessionAttributes": event["sessionAttributes"],
+        "promptSessionAttributes": event["promptSessionAttributes"],
     }
     logger.info(action_response)
     return action_response
