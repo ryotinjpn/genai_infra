@@ -33,10 +33,10 @@ def lambda_handler(event, _):
             enableTrace=False,
         )
         logger.info(response)
-        results = response['completion']
-        for result in results:        
-            if 'chunk' in result:
-                data = result['chunk']['bytes'].decode("utf-8")
+        results = response["completion"]
+        for result in results:
+            if "chunk" in result:
+                data = result["chunk"]["bytes"].decode("utf-8")
         logger.info(data)
 
         return {"status_code": 200, "message": "処理成功"}
