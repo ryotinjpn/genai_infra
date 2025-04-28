@@ -58,7 +58,6 @@ def lambda_handler(event, _):
             line_bot_api = LineBotApi(channel_access_token)
 
             reply_message = bedrock.generate_reply_message(events["message"]["text"])
-            logger.info("回答内容生成完了")
             line_bot_api.reply_message(
                 events["replyToken"], TextSendMessage(text=reply_message)
             )

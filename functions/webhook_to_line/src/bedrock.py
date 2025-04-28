@@ -60,6 +60,7 @@ def generate_reply_message(text: str):
         response_body = json.loads(response["body"].read())
         generate_reply_message = response_body["content"][0]["text"]
         logger.info(generate_reply_message)
+        logger.info("回答内容生成完了")
 
         return generate_reply_message
     except Exception as e:
