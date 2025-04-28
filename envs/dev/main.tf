@@ -35,7 +35,6 @@ module "lambda_search_agent" {
   project_name = local.project_name
   environment  = local.environment
 
-  model_id              = local.model_id
   lambda_runtime_python = local.lambda_runtime_python
   lambda_layer_arn      = module.lambda_common_virginia.lambda_layer_arn
   sns_topic_arn         = module.lambda_common_virginia.sns_topic_arn
@@ -88,6 +87,20 @@ module "lambda_webhook_to_line" {
   lambda_runtime_python = local.lambda_runtime_python
   lambda_layer_arn      = module.lambda_common.lambda_layer_arn
   sns_topic_arn         = module.lambda_common.sns_topic_arn
+}
+
+module "lambda_invoke_search_agent" {
+  source = "../../modules/lambda_invoke_search_agent"
+
+  project_name = local.project_name
+  environment  = local.environment
+
+  bedrock_region         = local.bedrock_region
+  lambda_runtime_python  = local.lambda_runtime_python
+  lambda_layer_arn       = module.lambda_common.lambda_layer_arn
+  sns_topic_arn          = module.lambda_common.sns_topic_arn
+  bedrock_agent_id       = module.bedrock_search_agent.bedrock_agent_id
+  bedrock_agent_alias_id = module.bedrock_search_agent.bedrock_agent_alias_id
 }
 
 module "dynamodb" {
