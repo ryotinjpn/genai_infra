@@ -3,7 +3,7 @@
 #######################################
 resource "aws_lambda_function" "main" {
   function_name    = "${var.project_name}-${var.environment}-search-agent"
-  description      = "Search Agentの アクショングループで起動する Lambda 関数"
+  description      = "Search Agent の アクショングループで起動する Lambda 関数"
   handler          = "lambda_handler.lambda_handler"
   memory_size      = 128
   timeout          = 900
@@ -12,7 +12,7 @@ resource "aws_lambda_function" "main" {
   filename         = local.lambda_zip_path
   source_code_hash = data.archive_file.main.output_base64sha256
   layers = [
-    var.lambda_layer_arn,
+    var.lambda_layer_arn
   ]
   environment {
     variables = {

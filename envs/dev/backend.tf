@@ -1,8 +1,8 @@
 terraform {
   backend "s3" {
-    bucket       = "tfstate-genai-dev-ap-northeast-1"
+    bucket       = "tfstate-genai-dev-us-east-1"
     key          = "terraform-playground.tfstate"
-    region       = "ap-northeast-1"
+    region       = "us-east-1"
     encrypt      = true
     use_lockfile = true
   }

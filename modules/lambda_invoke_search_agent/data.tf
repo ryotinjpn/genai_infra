@@ -71,7 +71,7 @@ data "aws_iam_policy_document" "lambda_role" {
       "bedrock:InvokeAgent"
     ]
     resources = [
-      "arn:aws:bedrock:${var.bedrock_region}:${data.aws_caller_identity.self.id}:agent-alias/*"
+      "arn:aws:bedrock:${data.aws_region.current.name}:${data.aws_caller_identity.self.id}:agent-alias/*"
     ]
   }
 }

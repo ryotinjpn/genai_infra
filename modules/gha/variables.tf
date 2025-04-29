@@ -17,11 +17,3 @@ variable "environment" {
   }
 }
 
-#######################################
-# IAM
-#######################################
-variable "bedrock_region" {
-  type        = string
-  description = "Enter the Bedrock Region."
-  nullable    = false
-}

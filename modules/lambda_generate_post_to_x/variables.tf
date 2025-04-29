@@ -20,12 +20,6 @@ variable "environment" {
 #######################################
 # Lambda
 #######################################
-variable "bedrock_region" {
-  type        = string
-  description = "Enter the Bedrock Region."
-  nullable    = false
-}
-
 variable "model_id" {
   type        = string
   description = "Enter the Model ID."
