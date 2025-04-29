@@ -20,12 +20,6 @@ variable "environment" {
 #######################################
 # Lambda
 #######################################
-variable "bedrock_region" {
-  type        = string
-  description = "Enter the Bedrock Region."
-  nullable    = false
-}
-
 variable "lambda_runtime_python" {
   type        = string
   description = "Enter the Lambda Runtime Python."

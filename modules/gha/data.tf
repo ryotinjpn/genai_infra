@@ -5,6 +5,7 @@ data "aws_region" "current" {}
 # IAM
 #######################################
 data "aws_iam_policy_document" "assume_role" {
+  version = "2012-10-17"
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]
     effect  = "Allow"
@@ -29,6 +30,7 @@ data "aws_iam_policy_document" "assume_role" {
 }
 
 data "aws_iam_policy_document" "bedrock" {
+  version = "2012-10-17"
   statement {
     effect = "Allow"
     actions = [
@@ -37,7 +39,7 @@ data "aws_iam_policy_document" "bedrock" {
     ]
     resources = [
       "arn:aws:bedrock:*::foundation-model/anthropic.*",
-      "arn:aws:bedrock:${var.bedrock_region}:${data.aws_caller_identity.self.id}:inference-profile/*"
+      "arn:aws:bedrock:${data.aws_region.current.name}:${data.aws_caller_identity.self.id}:inference-profile/*"
     ]
   }
 }

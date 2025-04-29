@@ -12,8 +12,7 @@ resource "aws_lambda_function" "main" {
   filename         = local.lambda_zip_path
   source_code_hash = data.archive_file.main.output_base64sha256
   layers = [
-    var.lambda_layer_arn,
-    "arn:aws:lambda:ap-northeast-1:133490724326:layer:AWS-Parameters-and-Secrets-Lambda-Extension:11"
+    var.lambda_layer_arn
   ]
   environment {
     variables = {
