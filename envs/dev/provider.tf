@@ -13,3 +13,8 @@ provider "awscc" {
   region = "us-east-1"
   alias  = "virginia"
 }
+
+provider "google" {
+  region  = "us-central1"
+  project = local.gcp_project_id
+}
