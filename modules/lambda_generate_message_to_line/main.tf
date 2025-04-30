@@ -12,7 +12,7 @@ resource "aws_lambda_function" "main" {
   filename         = local.lambda_zip_path
   source_code_hash = data.archive_file.main.output_base64sha256
   layers = [
-    var.lambda_layer_arn
+    var.lambda_layer_common_arn
   ]
   environment {
     variables = {
