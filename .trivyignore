@@ -1,2 +1,8 @@
 # AVD-AWS-0132 SSE-S3を使用する為
 AVD-AWS-0132
+# AVD-AWS-0031 ECRコスト削減の為
+AVD-AWS-0031
+# AVD-GCP-0068 Workload Identityで詳細権限設定不要の為
+AVD-GCP-0068
+# AVD-DS-0002 コンテナ起動をrootユーザで実行する為
+AVD-DS-0002
