@@ -3,6 +3,7 @@ setup:
 	tfenv install 1.10.5
 	tfenv use 1.10.5
 	brew install aws-vault
+	brew install --cask google-cloud-sdk
 	brew install tflint
 	brew install aquasecurity/trivy/trivy
 
