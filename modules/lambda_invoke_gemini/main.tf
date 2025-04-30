@@ -12,6 +12,7 @@ resource "aws_lambda_function" "main" {
   environment {
     variables = {
       TZ                                  = "Asia/Tokyo"
+      MODEL_ID                            = "gemini-2.5-flash-preview-04-17"
       GOOGLE_APPLICATION_CREDENTIALS_PATH = "/${var.project_name}/${var.environment}/GOOGLE_APPLICATION_CREDENTIALS"
       GCP_PROJECT_ID                      = var.gcp_project_id
       SNS_TOPIC_ARN                       = var.sns_topic_arn
