@@ -12,7 +12,7 @@ test:
 	terraform validate
 	tflint --init
 	tflint
-	trivy config . --config trivy.yml --ignorefile .trivyignore
+	trivy config . --config trivy.yaml --ignorefile .trivyignore
 
 LAYER_DIRS := common
 layer:
