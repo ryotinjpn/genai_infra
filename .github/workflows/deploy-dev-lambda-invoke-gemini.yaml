@@ -1,0 +1,59 @@
+name: Deploy Dev Lambda Invoke Gemini
+
+env:
+  PROJECT_NAME: genai
+  ENVIRONMENT: ${{ github.event.inputs.environment }}
+  LAMBDA_FUNCTION_DIR: invoke_gemini
+  LAMBDA_CONTAINER_DIR: lambda_$LAMBDA_FUNCTION_DIR
+  ECR_REPOSITORY: $PROJECT_NAME/$ENVIRONMENT/$LAMBDA_CONTAINER_DIR
+
+on:
+  push:
+    branches: [develop]
+    paths:
+      - 'functions/$LAMBDA_FUNCTION_DIR/**'
+      - 'containers/$LAMBDA_CONTAINER_DIR/**'
+      - '.github/workflows/deploy-dev-lambda-invoke-gemini.yaml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: Select environment
+        required: true
+        options:
+          - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEV_LAMBDA_DEPLOY_ROLE  }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push container image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          cd lambdas/user-service
+          docker buildx build --platform linux/amd64 --no-cache -t $ECR_REGISTRY/$ECR_REPOSITORY -f containers/$LAMBDA_CONTAINER_DIR/Dockerfile .
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:latest $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+      - name: Update Lambda Function
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          aws lambda update-function-code \
+            --function-name $PROJECT_NAME-$ENVIRONMENT-invoke-gemini \
+            --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:latest
