@@ -51,7 +51,7 @@ jobs:
           echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> $GITHUB_ENV
           echo "ECR_REPOSITORY="$PROJECT_NAME/$ENVIRONMENT/$LAMBDA_CONTAINER_DIR" >> $GITHUB_ENV
           echo "ECR_IMAGE_URI="$ECR_REGISTRY/$ECR_REPOSITORY:latest" >> $GITHUB_ENV
-      
+
       - name: Build and push container image
         run: |
           docker buildx build --platform linux/amd64 --no-cache -t $ECR_REGISTRY -f containers/$LAMBDA_CONTAINER_DIR/Dockerfile .
