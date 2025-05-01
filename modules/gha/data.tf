@@ -69,7 +69,13 @@ data "aws_iam_policy_document" "lambda_deploy_policy" {
   statement {
     effect = "Allow"
     actions = [
-      "ecr:GetAuthorizationToken",
+      "ecr:GetAuthorizationToken"
+    ]
+    resources = ["*"]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
       "ecr:BatchGetImage",
       "ecr:BatchCheckLayerAvailability"
     ]
