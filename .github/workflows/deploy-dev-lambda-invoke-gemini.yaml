@@ -3,17 +3,16 @@ name: Deploy Dev Lambda Invoke Gemini
 env:
   PROJECT_NAME: genai
   ENVIRONMENT: ${{ github.event.inputs.environment }}
-  LAMBDA_FUNCTION_DIR: invoke_gemini
-  LAMBDA_CONTAINER_DIR: lambda_$LAMBDA_FUNCTION_DIR
-  ECR_REPOSITORY: $PROJECT_NAME/$ENVIRONMENT/$LAMBDA_CONTAINER_DIR
+  AWS_REGION: us-east-1
+  LAMBDA_CONTAINER_DIR: lambda_invoke_gemini
 
 on:
   push:
     branches: [develop]
     paths:
-      - 'functions/$LAMBDA_FUNCTION_DIR/**'
-      - 'containers/$LAMBDA_CONTAINER_DIR/**'
-      - '.github/workflows/deploy-dev-lambda-invoke-gemini.yaml'
+      - "functions/invoke_gemini/**"
+      - "containers/lambda_invoke_gemini/**"
+      - ".github/workflows/deploy-dev-lambda-invoke-gemini.yaml"
   workflow_dispatch:
     inputs:
       environment:
@@ -25,8 +24,15 @@ on:
 
 jobs:
   deploy:
+    if: |
+      github.event.sender.type != 'Bot'
+      && !startsWith(github.head_ref, 'release')
+      && !startsWith(github.head_ref, 'doc')
+    name: Run Deploy Dev Lambda Invoke Gemini
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,25 +41,35 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_DEV_LAMBDA_DEPLOY_ROLE  }}
-          aws-region: us-east-1
+          aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+      - name: Get AWS Account ID safely
+        id: aws-info
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+          ECR_REGISTRY="$ACCOUNT_ID.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com"
+          echo "::add-mask::$ACCOUNT_ID"
+          echo "::add-mask::$ECR_REGISTRY"
+          echo "ECR_REGISTRY=$ECR_REGISTRY" >> $GITHUB_ENV
+
+      - name: Docker login to ECR
+        run: |
+          aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.ECR_REGISTRY }}
+
+      - name: Set ECR env and mask values
+        run: |
+          ECR_IMAGE_URI="${{ env.ECR_REGISTRY }}/${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/${{ env.LAMBDA_CONTAINER_DIR }}:latest"
+          echo "::add-mask::$ECR_IMAGE_URI"
+          echo "ECR_IMAGE_URI=$ECR_IMAGE_URI" >> $GITHUB_ENV
 
       - name: Build and push container image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          cd lambdas/user-service
-          docker buildx build --platform linux/amd64 --no-cache -t $ECR_REGISTRY/$ECR_REPOSITORY -f containers/$LAMBDA_CONTAINER_DIR/Dockerfile .
-          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:latest $ECR_REGISTRY/$ECR_REPOSITORY:latest
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker buildx build --platform linux/amd64 --no-cache -t ${{ env.ECR_IMAGE_URI }} -f containers/${{ env.LAMBDA_CONTAINER_DIR }}/Dockerfile .
+          docker push ${{ env.ECR_IMAGE_URI }}
 
-      - name: Update Lambda Function
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      - name: Update Lambda Function (silent)
         run: |
           aws lambda update-function-code \
-            --function-name $PROJECT_NAME-$ENVIRONMENT-invoke-gemini \
-            --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:latest
+            --function-name ${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}-invoke-gemini \
+            --image-uri ${{ env.ECR_IMAGE_URI }} \
+            >/dev/null 2>&1
