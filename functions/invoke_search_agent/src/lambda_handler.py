@@ -21,8 +21,8 @@ def lambda_handler(event, _):
 
     input_text = event.get("input_text", None)
     if not input_text:
-        logger.error("inputText がイベントから取得できませんでした")
-        return {"status_code": 400, "message": "inputText が必要です"}
+        logger.error("input_text がイベントから取得できませんでした")
+        return {"status_code": 400, "message": "input_text が必要です"}
 
     try:
         response = bedrock_agent_client.invoke_agent(

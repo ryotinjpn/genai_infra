@@ -1,0 +1,57 @@
+name: "CI"
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+    branches-ignore:
+      - 'release/**'
+      - 'doc/**'
+
+jobs:
+  ci:
+    if: |
+      github.event.pull_request.draft == false
+      && !startsWith(github.head_ref, 'release')
+      && !startsWith(github.head_ref, 'doc')
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: "1.10.5"
+
+    - name: Run check fmt
+      run: terraform fmt -check
+
+    - name: Run validate
+      run: terraform validate
+
+    - name: Cache plugin dir
+      uses: actions/cache@v4
+      with:
+        path: ~/.tflint.d/plugins
+        key: ubuntu-latest-tflint-${{ hashFiles('.tflint.hcl') }}
+
+    - name: Setup tflint
+      uses: terraform-linters/setup-tflint@v4
+      with:
+        tflint_version: latest
+
+    - name: Show version
+      run: tflint --version
+
+    - name: Init tflint
+      run: tflint --init
+
+    - name: Run tflint
+      run: tflint
+
+    - name: Run trivy
+      uses: aquasecurity/trivy-action@0.28.0
+      with:
+        scan-type: 'config'
+        scan-ref: '.'
+        trivy-config: trivy.yaml
+        trivyignores: .trivyignore

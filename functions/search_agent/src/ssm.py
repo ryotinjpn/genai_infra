@@ -7,7 +7,7 @@ import boto3
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-ssm_client = boto3.client("ssm", region_name="ap-northeast-1")
+ssm_client = boto3.client("ssm")
 sns_client = boto3.client("sns")
 sns_topic_arn = os.environ["SNS_TOPIC_ARN"]
 

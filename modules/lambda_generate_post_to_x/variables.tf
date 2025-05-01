@@ -32,9 +32,9 @@ variable "lambda_runtime_python" {
   nullable    = false
 }
 
-variable "lambda_layer_arn" {
+variable "lambda_layer_common_arn" {
   type        = string
-  description = "Enter the Lambda Layer Arn."
+  description = "Enter the Lambda Layer Common Arn."
   nullable    = false
 }
 

@@ -26,9 +26,9 @@ module "lambda_search_agent" {
   project_name = local.project_name
   environment  = local.environment
 
-  lambda_runtime_python = local.lambda_runtime_python
-  lambda_layer_arn      = module.lambda_common.lambda_layer_arn
-  sns_topic_arn         = module.lambda_common.sns_topic_arn
+  lambda_runtime_python   = local.lambda_runtime_python
+  lambda_layer_common_arn = module.lambda_common.lambda_layer_common_arn
+  sns_topic_arn           = module.lambda_common.sns_topic_arn
 }
 
 
@@ -38,11 +38,11 @@ module "lambda_generate_post_to_x" {
   project_name = local.project_name
   environment  = local.environment
 
-  model_id              = local.model_id
-  lambda_runtime_python = local.lambda_runtime_python
-  lambda_layer_arn      = module.lambda_common.lambda_layer_arn
-  sns_topic_arn         = module.lambda_common.sns_topic_arn
-  dynamodb_table_name   = module.dynamodb.generate_post_to_x_name
+  model_id                = local.model_id
+  lambda_runtime_python   = local.lambda_runtime_python
+  lambda_layer_common_arn = module.lambda_common.lambda_layer_common_arn
+  sns_topic_arn           = module.lambda_common.sns_topic_arn
+  dynamodb_table_name     = module.dynamodb.generate_post_to_x_name
 }
 
 module "lambda_generate_message_to_line" {
@@ -51,10 +51,10 @@ module "lambda_generate_message_to_line" {
   project_name = local.project_name
   environment  = local.environment
 
-  model_id              = local.model_id
-  lambda_runtime_python = local.lambda_runtime_python
-  lambda_layer_arn      = module.lambda_common.lambda_layer_arn
-  sns_topic_arn         = module.lambda_common.sns_topic_arn
+  model_id                = local.model_id
+  lambda_runtime_python   = local.lambda_runtime_python
+  lambda_layer_common_arn = module.lambda_common.lambda_layer_common_arn
+  sns_topic_arn           = module.lambda_common.sns_topic_arn
 }
 
 module "lambda_webhook_to_line" {
@@ -63,12 +63,12 @@ module "lambda_webhook_to_line" {
   project_name = local.project_name
   environment  = local.environment
 
-  model_id               = local.model_id
-  lambda_runtime_python  = local.lambda_runtime_python
-  lambda_layer_arn       = module.lambda_common.lambda_layer_arn
-  sns_topic_arn          = module.lambda_common.sns_topic_arn
-  bedrock_agent_id       = module.bedrock_search_agent.bedrock_agent_id
-  bedrock_agent_alias_id = module.bedrock_search_agent.bedrock_agent_alias_id
+  model_id                = local.model_id
+  lambda_runtime_python   = local.lambda_runtime_python
+  lambda_layer_common_arn = module.lambda_common.lambda_layer_common_arn
+  sns_topic_arn           = module.lambda_common.sns_topic_arn
+  bedrock_agent_id        = module.bedrock_search_agent.bedrock_agent_id
+  bedrock_agent_alias_id  = module.bedrock_search_agent.bedrock_agent_alias_id
 }
 
 module "lambda_invoke_search_agent" {
@@ -77,11 +77,21 @@ module "lambda_invoke_search_agent" {
   project_name = local.project_name
   environment  = local.environment
 
-  lambda_runtime_python  = local.lambda_runtime_python
-  lambda_layer_arn       = module.lambda_common.lambda_layer_arn
-  sns_topic_arn          = module.lambda_common.sns_topic_arn
-  bedrock_agent_id       = module.bedrock_search_agent.bedrock_agent_id
-  bedrock_agent_alias_id = module.bedrock_search_agent.bedrock_agent_alias_id
+  lambda_runtime_python   = local.lambda_runtime_python
+  lambda_layer_common_arn = module.lambda_common.lambda_layer_common_arn
+  sns_topic_arn           = module.lambda_common.sns_topic_arn
+  bedrock_agent_id        = module.bedrock_search_agent.bedrock_agent_id
+  bedrock_agent_alias_id  = module.bedrock_search_agent.bedrock_agent_alias_id
+}
+
+module "lambda_invoke_gemini" {
+  source = "../../modules/lambda_invoke_gemini"
+
+  project_name = local.project_name
+  environment  = local.environment
+
+  gcp_project_id = local.gcp_project_id
+  sns_topic_arn  = module.lambda_common.sns_topic_arn
 }
 
 module "dynamodb" {
@@ -90,6 +100,13 @@ module "dynamodb" {
 
 module "gha" {
   source = "../../modules/gha"
+
+  project_name = local.project_name
+  environment  = local.environment
+}
+
+module "service_account" {
+  source = "../../modules/service_account"
 
   project_name = local.project_name
   environment  = local.environment
