@@ -54,8 +54,7 @@ jobs:
 
       - name: Build and push container image
         run: |
-          docker buildx build --platform linux/amd64 --no-cache -t ${{ env.ECR_REGISTRY }} -f containers/${{ env.LAMBDA_CONTAINER_DIR }}/Dockerfile .
-          docker tag ${{ env.ECR_REPOSITORY }} ${{ env.ECR_IMAGE_URI }}
+          docker buildx build --platform linux/amd64 --no-cache -t ${{ env.ECR_IMAGE_URI }} -f containers/${{ env.LAMBDA_CONTAINER_DIR }}/Dockerfile .
           docker push ${{ env.ECR_IMAGE_URI }}
 
       - name: Update Lambda Function
