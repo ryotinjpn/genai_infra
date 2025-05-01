@@ -43,17 +43,24 @@ jobs:
           role-to-assume: ${{ secrets.AWS_DEV_LAMBDA_DEPLOY_ROLE  }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR (silent)
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+      - name: Get AWS Account ID safely
+        id: aws-info
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+          ECR_REGISTRY="$ACCOUNT_ID.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com"
+          echo "::add-mask::$ACCOUNT_ID"
+          echo "::add-mask::$ECR_REGISTRY"
+          echo "ECR_REGISTRY=$ECR_REGISTRY" >> $GITHUB_ENV
+
+      - name: Docker login to ECR
+        run: |
+          aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.ECR_REGISTRY }}
 
       - name: Set ECR env and mask values
         run: |
-          echo "::add-mask::${{ steps.login-ecr.outputs.registry }}"
-
-          echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> $GITHUB_ENV
-          echo "ECR_REPOSITORY=${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/${{ env.LAMBDA_CONTAINER_DIR }}:latest" >> $GITHUB_ENV
-          echo "ECR_IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/${{ env.LAMBDA_CONTAINER_DIR }}:latest" >> $GITHUB_ENV
+          ECR_IMAGE_URI="${{ env.ECR_REGISTRY }}/${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/${{ env.LAMBDA_CONTAINER_DIR }}:latest"
+          echo "::add-mask::$ECR_IMAGE_URI"
+          echo "ECR_IMAGE_URI=$ECR_IMAGE_URI" >> $GITHUB_ENV
 
       - name: Build and push container image
         run: |
