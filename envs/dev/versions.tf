@@ -11,5 +11,10 @@ terraform {
       source  = "hashicorp/awscc"
       version = "1.37.0"
     }
+
+    google = {
+      source  = "hashicorp/google"
+      version = "6.33.0"
+    }
   }
 }
