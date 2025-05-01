@@ -49,13 +49,13 @@ jobs:
       - name: Set ECR env
         run: |
           echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> $GITHUB_ENV
-          echo "ECR_REPOSITORY=${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/${{ env.LAMBDA_CONTAINER_DIR }}" >> $GITHUB_ENV
-          echo "ECR_IMAGE_URI=$ECR_REGISTRY/$ECR_REPOSITORY:latest" >> $GITHUB_ENV
+          echo "ECR_REPOSITORY=${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/${{ env.LAMBDA_CONTAINER_DIR }}:latest" >> $GITHUB_ENV
+          echo "ECR_IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/${{ env.LAMBDA_CONTAINER_DIR }}:latest" >> $GITHUB_ENV
 
       - name: Build and push container image
         run: |
           docker buildx build --platform linux/amd64 --no-cache -t ${{ env.ECR_REGISTRY }} -f containers/${{ env.LAMBDA_CONTAINER_DIR }}/Dockerfile .
-          docker tag ${{ env.ECR_REPOSITORY }}:latest ${{ env.ECR_IMAGE_URI }}
+          docker tag ${{ env.ECR_REPOSITORY }} ${{ env.ECR_IMAGE_URI }}
           docker push ${{ env.ECR_IMAGE_URI }}
 
       - name: Update Lambda Function
