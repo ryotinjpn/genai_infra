@@ -18,16 +18,13 @@ resource "aws_lambda_function" "main" {
       SNS_TOPIC_ARN                       = var.sns_topic_arn
     }
   }
-
-  # ECRリポジトリにイメージがプッシュされた後に実行
-  depends_on = [null_resource.docker_push]
 }
 
 #######################################
 # ECR
 #######################################
 resource "aws_ecr_repository" "main" {
-  name                 = "${var.project_name}/lambda_invoke_gemini"
+  name                 = "${var.project_name}/${var.environment}/lambda_invoke_gemini"
   image_tag_mutability = "MUTABLE"
   image_scanning_configuration {
     scan_on_push = true
@@ -38,34 +35,6 @@ resource "aws_ecr_repository" "main" {
 resource "aws_ecr_lifecycle_policy" "main" {
   repository = aws_ecr_repository.main.name
   policy     = data.aws_ecr_lifecycle_policy_document.main.json
-}
-
-resource "null_resource" "docker_push" {
-  triggers = {
-    always_run = "${timestamp()}"
-  }
-  provisioner "local-exec" {
-    command = <<EOT
-      aws ecr get-login-password --region ${data.aws_region.current.name} --profile ${data.aws_ssm_parameter.profile_name.value} | docker login --username AWS --password-stdin ${aws_ecr_repository.main.repository_url}
-      docker tag ${aws_ecr_repository.main.name}:latest ${aws_ecr_repository.main.repository_url}:latest
-      docker push ${aws_ecr_repository.main.repository_url}:latest
-    EOT
-  }
-  # ECRリポジトリの作成後に実行
-  depends_on = [aws_ecr_repository.main]
-}
-
-resource "null_resource" "lambda_update_function_code" {
-  triggers = {
-    always_run = "${timestamp()}"
-  }
-  provisioner "local-exec" {
-    command = <<EOT
-      aws lambda update-function-code --function-name ${aws_lambda_function.main.function_name} --image-uri ${aws_ecr_repository.main.repository_url}:latest --region ${data.aws_region.current.name} --profile ${data.aws_ssm_parameter.profile_name.value}
-    EOT
-  }
-  # Lambda関数の作成後に実行
-  depends_on = [aws_lambda_function.main]
 }
 
 #######################################
