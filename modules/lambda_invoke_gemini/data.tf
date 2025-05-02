@@ -1,8 +1,5 @@
 data "aws_caller_identity" "self" {}
 data "aws_region" "current" {}
-data "aws_ssm_parameter" "profile_name" {
-  name = "PROFILE_NAME"
-}
 
 #######################################
 # ECR
@@ -74,12 +71,5 @@ data "aws_iam_policy_document" "lambda_role" {
       "sns:Publish",
     ]
     resources = [var.sns_topic_arn]
-  }
-  statement {
-    effect = "Allow"
-    actions = [
-      "sts:AssumeRoleWithWebIdentity",
-    ]
-    resources = ["arn:aws:iam::${data.aws_caller_identity.self.id}:role/*"]
   }
 }
