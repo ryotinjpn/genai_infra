@@ -21,9 +21,9 @@ def lambda_handler(event, _):
         return {"status_code": 400, "message": "input_text が必要です"}
 
     try:
-        vertex_ai.generate_answer(input_text)
+        results = vertex_ai.generate_answer(input_text)
 
-        return {"status_code": 200, "message": "処理成功"}
+        return {"status_code": 200, "message": "処理成功", "text": results}
     except Exception as e:
         sns_client.publish(
             TopicArn=sns_topic_arn,
