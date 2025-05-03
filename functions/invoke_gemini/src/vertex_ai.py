@@ -47,9 +47,9 @@ def generate_answer(text: str):
             text,
             generation_config=generation_config,
         )
-        logger.info("要約生成完了")
-        logger.info(response)
+        logger.info("回答生成完了")
+        logger.info(response.text)
 
-        return response
+        return response.text
     except Exception as e:
-        raise Exception(f"要約生成エラー: {e}")
+        raise Exception(f"回答生成エラー: {e}")
