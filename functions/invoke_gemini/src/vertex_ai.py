@@ -29,7 +29,7 @@ def generate_answer(text: str):
         text (str): 元テキスト
 
     Returns:
-        str: 要約内容
+        str: 回答内容
     """
 
     try:
