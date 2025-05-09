@@ -7,7 +7,7 @@ import boto3
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-bedrock_client = boto3.client("bedrock-runtime", region_name="us-east-1")
+bedrock_client = boto3.client("bedrock-runtime")
 model_id = os.environ["MODEL_ID"]
 
 

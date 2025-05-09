@@ -8,7 +8,7 @@ import boto3
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-bedrock_agent_client = boto3.client("bedrock-agent-runtime", region_name="us-east-1")
+bedrock_agent_client = boto3.client("bedrock-agent-runtime")
 agent_id = os.environ["BEDROCK_AGENT_ID"]
 agent_alias_id = os.environ["BEDROCK_AGENT_ALIAS_ID"]
 
