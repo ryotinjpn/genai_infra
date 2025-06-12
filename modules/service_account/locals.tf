@@ -6,6 +6,7 @@ locals {
     "cloudresourcemanager.googleapis.com",
     "iamcredentials.googleapis.com",
     "sts.googleapis.com",
-    "aiplatform.googleapis.com"
+    "aiplatform.googleapis.com",
+    "calendar-json.googleapis.com"
   ])
 }
