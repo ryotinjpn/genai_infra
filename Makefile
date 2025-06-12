@@ -14,7 +14,7 @@ test:
 	tflint
 	trivy config . --config trivy.yaml --ignorefile .trivyignore
 
-LAYER_DIRS := common
+LAYER_DIRS := common gcp
 layer:
 	@for layer in $(LAYER_DIRS); do \
 		echo "Building layer: $$layer"; \
