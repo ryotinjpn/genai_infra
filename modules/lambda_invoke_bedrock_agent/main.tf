@@ -2,8 +2,8 @@
 # Lambda Function
 #######################################
 resource "aws_lambda_function" "main" {
-  function_name    = "${var.project_name}-${var.environment}-invoke-search-agent"
-  description      = "Search Agent の 呼び出しテスト用 Lambda 関数"
+  function_name    = "${var.project_name}-${var.environment}-invoke-bedrock-agent"
+  description      = "Bedrock Agent の 呼び出しテスト用 Lambda 関数"
   handler          = "lambda_handler.lambda_handler"
   memory_size      = 128
   timeout          = 900
@@ -16,10 +16,8 @@ resource "aws_lambda_function" "main" {
   ]
   environment {
     variables = {
-      TZ                     = "Asia/Tokyo"
-      BEDROCK_AGENT_ID       = var.bedrock_agent_id
-      BEDROCK_AGENT_ALIAS_ID = var.bedrock_agent_alias_id
-      SNS_TOPIC_ARN          = var.sns_topic_arn
+      TZ            = "Asia/Tokyo"
+      SNS_TOPIC_ARN = var.sns_topic_arn
     }
   }
 }
@@ -36,7 +34,7 @@ resource "aws_cloudwatch_log_group" "main" {
 # IAM
 #######################################
 resource "aws_iam_role" "main" {
-  name               = "LambdaRoleForInvokeSearchAgent-${var.project_name}-${var.environment}"
+  name               = "LambdaRoleForInvokeBedrockAgent-${var.project_name}-${var.environment}"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
@@ -46,6 +44,6 @@ resource "aws_iam_role_policy_attachment" "main" {
 }
 
 resource "aws_iam_policy" "main" {
-  name   = "LambdaRoleForInvokeSearchAgent-${var.project_name}-${var.environment}"
+  name   = "LambdaRoleForInvokeBedrockAgent-${var.project_name}-${var.environment}"
   policy = data.aws_iam_policy_document.lambda_role.json
 }

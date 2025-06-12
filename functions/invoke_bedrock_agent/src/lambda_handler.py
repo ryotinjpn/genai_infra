@@ -9,8 +9,6 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 bedrock_agent_client = boto3.client("bedrock-agent-runtime")
-agent_id = os.environ["BEDROCK_AGENT_ID"]
-agent_alias_id = os.environ["BEDROCK_AGENT_ALIAS_ID"]
 
 sns_client = boto3.client("sns")
 sns_topic_arn = os.environ["SNS_TOPIC_ARN"]
@@ -19,16 +17,17 @@ sns_topic_arn = os.environ["SNS_TOPIC_ARN"]
 def lambda_handler(event, _):
     """Lambdaエントリーポイント"""
 
-    input_text = event.get("input_text", None)
-    if not input_text:
-        logger.error("イベントに input_text 未定義")
-        return {"status_code": 400, "message": "イベントに input_text 未定義"}
+    required_keys = ["input_text", "agent_id", "agent_alias_id"]
+    for key in required_keys:
+        if not event.get(key):
+            logger.error(f"イベントに {key} 未定義")
+            return {"status_code": 400, "message": f"イベントに {key} 未定義"}
 
     try:
         response = bedrock_agent_client.invoke_agent(
-            inputText=input_text,
-            agentId=agent_id,
-            agentAliasId=agent_alias_id,
+            inputText=event["input_text"],
+            agentId=event["agent_id"],
+            agentAliasId=event["agent_alias_id"],
             sessionId=str(uuid.uuid1()),
             enableTrace=False,
         )
@@ -43,7 +42,7 @@ def lambda_handler(event, _):
     except Exception as e:
         sns_client.publish(
             TopicArn=sns_topic_arn,
-            Subject="【ALERT】lambda_generate_message_to_line エラー",
+            Subject="【ALERT】invoke_bedrock_agent エラー",
             Message=f"\n{str(e)}\n\n{traceback.format_exc()}",
         )
         return {"status_code": 500, "message": "処理失敗", "error": str(e)}
