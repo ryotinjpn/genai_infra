@@ -8,6 +8,13 @@ resource "aws_lambda_layer_version" "common" {
   source_code_hash    = filebase64sha256(local.lambda_layers_common_path)
 }
 
+resource "aws_lambda_layer_version" "gcp" {
+  filename            = local.lambda_layers_common_path
+  layer_name          = "${var.project_name}-${var.environment}-lambda-layer-gcp"
+  compatible_runtimes = [var.lambda_runtime_python]
+  source_code_hash    = filebase64sha256(local.lambda_layers_common_path)
+}
+
 #######################################
 # SNS Topic
 #######################################
