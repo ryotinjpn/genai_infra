@@ -1,7 +1,7 @@
 #######################################
 # Service Account
 #######################################
-## API の 有効化
+# API の 有効化
 resource "google_project_service" "main" {
   for_each                   = local.services
   project                    = local.project_id

@@ -15,11 +15,17 @@ credentials = ssm.get_parameter_store_value(
     os.environ.get("GOOGLE_APPLICATION_CREDENTIALS_PATH")
 )
 
-credentials_path = "/tmp/google-credentials.json"
-with open(credentials_path, "w") as f:
-    f.write(credentials)
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
+def get_gcloud_credential():
+    """Google Cloud 認証情報を取得する"""
+
+    credentials_path = "/tmp/gcloud-credentials.json"
+    if os.path.exists(credentials_path):
+        return
+
+    with open(credentials_path, "w") as f:
+        f.write(credentials)
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
 
 
 def generate_answer(text: str):
@@ -29,10 +35,11 @@ def generate_answer(text: str):
         text (str): 元テキスト
 
     Returns:
-        str: 要約内容
+        str: 回答内容
     """
 
     try:
+        get_gcloud_credential()
         vertexai.init(project=gcp_project_id, location="us-central1")
         model = GenerativeModel(model_id)
         generation_config = GenerationConfig(
@@ -47,9 +54,9 @@ def generate_answer(text: str):
             text,
             generation_config=generation_config,
         )
-        logger.info("要約生成完了")
-        logger.info(response)
+        logger.info("回答生成完了")
+        logger.info(response.text)
 
-        return response
+        return response.text
     except Exception as e:
-        raise Exception(f"要約生成エラー: {e}")
+        raise Exception(f"回答生成エラー: {e}")

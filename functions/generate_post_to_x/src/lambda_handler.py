@@ -10,6 +10,8 @@ dynamodb_resource = dynamodb.DynamoDBResource()
 sns_client = boto3.client("sns")
 sns_topic_arn = os.environ["SNS_TOPIC_ARN"]
 
+IS_CREATE_X_TO_POSTS = bool(int(os.environ["IS_CREATE_X_TO_POSTS"]))
+
 
 def lambda_handler(event, _):
     """Lambdaエントリーポイント"""
@@ -17,7 +19,8 @@ def lambda_handler(event, _):
     try:
         post_history = dynamodb_resource.get_post_history()
         new_post = bedrock.generate_post(post_history)
-        x_api.create_x_to_posts(new_post)
+        if IS_CREATE_X_TO_POSTS:
+            x_api.create_x_to_posts(new_post)
         dynamodb_resource.put_post_history(new_post)
 
         return {"status_code": 200, "message": "処理成功"}

@@ -17,13 +17,13 @@ def lambda_handler(event, _):
 
     input_text = event.get("input_text", None)
     if not input_text:
-        logger.error("input_text がイベントから取得できませんでした")
-        return {"status_code": 400, "message": "input_text が必要です"}
+        logger.error("イベントに input_text 未定義")
+        return {"status_code": 400, "message": "イベントに input_text 未定義"}
 
     try:
-        vertex_ai.generate_answer(input_text)
+        result = vertex_ai.generate_answer(input_text)
 
-        return {"status_code": 200, "message": "処理成功"}
+        return {"status_code": 200, "message": "処理成功", "result": result}
     except Exception as e:
         sns_client.publish(
             TopicArn=sns_topic_arn,

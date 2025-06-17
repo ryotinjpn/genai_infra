@@ -62,12 +62,12 @@ resource "terraform_data" "trigger" {
 # IAM
 #######################################
 resource "aws_iam_role" "main" {
-  name               = "BedrockAgentRole-${var.project_name}-${var.environment}"
+  name               = "BedrockAgentRole-${var.project_name}-${var.environment}-search-agent"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
 resource "aws_iam_policy" "main" {
-  name   = "BedrockAgentAccessForBedrock-${var.project_name}-${var.environment}"
+  name   = "BedrockAgentAccessForBedrock-${var.project_name}-${var.environment}-search-agent"
   path   = "/service-role/"
   policy = data.aws_iam_policy_document.bedrock_role.json
 }

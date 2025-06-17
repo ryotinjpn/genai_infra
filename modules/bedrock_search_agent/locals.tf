@@ -33,5 +33,5 @@ EOT
 検索結果には関連度の低い内容も含まれているため関連度の高い内容のみを参考に回答してください
 EOT
 
-  agent_version = 1
+  agent_version = 2
 }
