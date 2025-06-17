@@ -41,7 +41,8 @@ def lambda_handler(event, _):
                 summary = get_parameter(parameters, "summary")
                 start = get_parameter(parameters, "start")
                 end = get_parameter(parameters, "end")
-                response_text = google_api.create_calendar_event(summary, start, end)
+                google_api.create_calendar_event(summary, start, end)
+                response_text = f"カレンダー登録成功: {summary} 開始:{start} 終了:{end}"
             case _:
                 response_text = "Error No function was called"
                 logger.warning("関数未呼び出し")
